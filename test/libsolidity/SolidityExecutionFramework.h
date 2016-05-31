@@ -25,6 +25,7 @@
 #include <string>
 #include <tuple>
 #include <fstream>
+#include <boost/rational.hpp>
 #include "../TestHelper.h"
 #include "../RPCSession.h"
 #include <libethcore/ABI.h>
@@ -43,6 +44,8 @@ namespace solidity
 {
 namespace test
 {
+
+using rational = boost::rational<dev::bigint>;
 
 class ExecutionFramework
 {
@@ -85,6 +88,7 @@ public:
 	bytes const& callContractFunctionWithValue(std::string _sig, u256 const& _value, Args const&... _arguments)
 	{
 		FixedHash<4> hash(dev::sha3(_sig));
+		//std::cout << hash.asBytes() + encodeArgs(_arguments...) << std::endl;
 		sendMessage(hash.asBytes() + encodeArgs(_arguments...), false, _value);
 		return m_output;
 	}
@@ -164,6 +168,12 @@ public:
 	static bytes encodeDyn(Arg const& _arg)
 	{
 		return encodeArgs(u256(0x20), u256(_arg.size()), _arg);
+	}
+	static u256 fixed(int _numerator, int _denominator, int _fixedBits)
+	{
+		rational _value = rational(dev::bigint(_numerator), dev::bigint(_denominator));
+		rational value = _value * boost::multiprecision::pow(bigint(2), _fixedBits);
+		return u256(value.numerator()/value.denominator());
 	}
 
 	class ContractInterface
