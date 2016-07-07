@@ -23,6 +23,7 @@
 #include <utility>
 #include <numeric>
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <libdevcore/Common.h>
 #include <libdevcore/SHA3.h>
 #include <libsolidity/ast/AST.h>
@@ -30,6 +31,7 @@
 #include <libsolidity/codegen/CompilerContext.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 #include <libsolidity/codegen/LValue.h>
+#include <libsolidity/inlineasm/AsmStack.h>
 #include <libevmasm/GasMeter.h>
 using namespace std;
 
@@ -1363,36 +1365,67 @@ void ExpressionCompiler::appendArithmeticOperatorCode(Token::Value _operator, Ty
 		{
 			if (c_numBits - c_fractionalBits == 0)
 			{
-				//m_context << Instruction::DUP1 << Instruction::DUP2;
+				m_context << Instruction::DUP1 << Instruction::DUP2;
 				//take two numbers, cut them in half, multiply them, simple as that.
-				//m_context << c_halfShift << Instruction::DUP1 << Instruction::SWAP2 << (c_isSigned ? Instruction::SDIV : Instruction::DIV); 
-				//m_context << Instruction::SWAP2 << (c_isSigned ? Instruction::SDIV : Instruction::DIV) << Instruction::MUL;
-				m_context << Instruction::MUL;
+				m_context << c_halfShift << Instruction::DUP1 << Instruction::SWAP2 << (c_isSigned ? Instruction::SDIV : Instruction::DIV); 
+				m_context << Instruction::SWAP2 << (c_isSigned ? Instruction::SDIV : Instruction::DIV) << Instruction::MUL;
 			}
 			else if (c_numBits > 128)
 			{
-				//duplicate converted types for reusage
-				m_context << Instruction::DUP1 << Instruction::DUP3;
-				
 				//time to get schwifty in here...
 				//split both numbers into their representative fractional and decimal parts
 				//this takes the form A.B * C.D
 				//then we utilize this formula:
 				//D*B/shift + C*A*shift + D*A + C*B 
 				
-				//D*B/shift				
-				m_context << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SMOD : Instruction::MOD);
-				m_context << Instruction::SWAP1 << c_fractionShift <<  Instruction::SWAP1 << (c_isSigned ? Instruction::SMOD : Instruction::MOD);
+				//D*B/shift	
+				appendInlineAssembly(R"(
+					let firstNum := dup1
+					let secondNum := dup3
+					let B := $mod($fractionShift, firstNum)
+					let D := $mod($fractionShift, secondNum)
+				)", map<string, string>{
+						{"$fractionShift", toString(c_fractionShift)},
+						{"$mod", (c_isSigned ? "smod" : "mod")}
+				});
+				//m_context << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SMOD : Instruction::MOD);
+				//m_context << Instruction::SWAP1 << c_fractionShift <<  Instruction::SWAP1 << (c_isSigned ? Instruction::SMOD : Instruction::MOD);
 				if (c_fractionalBits > c_intBits)
 				{
 					//we need this here because overwise we will have an overflow with our fractional bits
-					m_context << c_halfShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
-					m_context << Instruction::SWAP1 << c_halfShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV) << Instruction::MUL;
+
+					appendInlineAssembly(R"(
+						let runningTotal := mul($div(B, $halfShift), $div(D, $halfShift))
+					)", map<string, string> {
+							{"$div", (c_isSigned ? "sdiv" : "div")},
+							{"$halfShift", toString(c_halfShift)}
+					});
+					//m_context << c_halfShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
+					//m_context << Instruction::SWAP1 << c_halfShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV) << Instruction::MUL;
 				}
 				else
-					m_context << Instruction::MUL << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
-				//C*A*shift*/
-				m_context << Instruction::DUP2 << Instruction::DUP4;
+				{
+					appendInlineAssembly(R"(
+						let runningTotal := $div(mul(B, D), $fractionShift)
+					)", map<string, string> {
+							{"$fractionShift", toString(c_fractionShift)}
+							{"$div", (c_isSigned ? "sdiv" : "div")}
+					});
+					//m_context << Instruction::MUL << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
+				}
+				//C*A*shift
+				appendInlineAssembly(R"(
+					let A := $div(firstNum, $fractionShift)
+					let C := $div(secondNum, $fractionShift)
+					//C*A*shift
+					runningTotal := add(runningTotal, mul($fractionShift, mul(A, C)))
+					runningTotal := add(runningTotal, mul(D, A))
+					runningTotal := add(runningTotal, mul(C, B))
+				)", map<string, string> {
+						{"$div", (c_isSigned ? "sdiv" : "div")},
+						{"$fractionShift", toString(c_fractionShift}
+				});
+				/*m_context << Instruction::DUP2 << Instruction::DUP4;
 				m_context << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
 				m_context << Instruction::SWAP1 << c_fractionShift <<  Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
 				m_context << Instruction::MUL << c_fractionShift << Instruction::MUL << Instruction::ADD;
@@ -1404,7 +1437,7 @@ void ExpressionCompiler::appendArithmeticOperatorCode(Token::Value _operator, Ty
 				//C*B
 				m_context << Instruction::SWAP2 << c_fractionShift << Instruction::SWAP1 << (c_isSigned ? Instruction::SDIV : Instruction::DIV);
 				m_context << Instruction::SWAP1 << c_fractionShift <<  Instruction::SWAP1 << (c_isSigned ? Instruction::SMOD : Instruction::MOD);
-				m_context << Instruction::MUL << Instruction::ADD;
+				m_context << Instruction::MUL << Instruction::ADD;*/
 			}
 			else
 			{
@@ -1698,6 +1731,19 @@ void ExpressionCompiler::setLValueToStorageItem(Expression const& _expression)
 CompilerUtils ExpressionCompiler::utils()
 {
 	return CompilerUtils(m_context);
+}
+
+void ExpressionCompiler::appendInlineAssembly(string const& _assembly, map<string, string> const& _replacements)
+{
+	if (_replacements.empty())
+		solAssert(assembly::InlineAssemblyStack().parseAndAssemble(_assembly, m_context.nonConstAssembly()), "");
+	else
+	{
+		string assembly = _assembly;
+		for (auto const& replacement: _replacements)
+			assembly = boost::algorithm::replace_all_copy(assembly, replacement.first, replacement.second);
+		solAssert(assembly::InlineAssemblyStack().parseAndAssemble(assembly, m_context.nonConstAssembly()), "");
+	}
 }
 
 }

@@ -24,6 +24,7 @@
 #include <memory>
 #include <libevmasm/Assembly.h>
 #include <libevmasm/SourceLocation.h>
+#include <libsolidity/parsing/Scanner.h>
 #include <libsolidity/inlineasm/AsmParser.h>
 #include <libsolidity/inlineasm/AsmCodeGen.h>
 
@@ -32,7 +33,7 @@ using namespace dev;
 using namespace dev::solidity;
 using namespace dev::solidity::assembly;
 
-bool InlineAssemblyStack::parse(const std::shared_ptr<Scanner>& _scanner)
+bool InlineAssemblyStack::parse(shared_ptr<Scanner> const& _scanner)
 {
 	m_parserResult = make_shared<Block>();
 	Parser parser(m_errors);
@@ -49,3 +50,17 @@ eth::Assembly InlineAssemblyStack::assemble()
 	return codeGen.assemble();
 }
 
+bool InlineAssemblyStack::parseAndAssemble(string const& _input, eth::Assembly& _assembly)
+{
+	ErrorList errors;
+	auto scanner = make_shared<Scanner>(CharStream(_input), "--CODEGEN--");
+	auto parserResult = Parser(errors).parse(scanner);
+	if (!errors.empty())
+		return false;
+
+	CodeGenerator(*parserResult, errors).assemble(_assembly);
+
+	// At this point, the assembly might be messed up, but we should throw an
+	// internal compiler error anyway.
+	return errors.empty();
+}
