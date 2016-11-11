@@ -7581,6 +7581,20 @@ BOOST_AUTO_TEST_CASE(packed_storage_overflow)
 	BOOST_CHECK(callContractFunction("f()") == encodeArgs(u256(0x1234), u256(0), u256(0), u256(0xfffe)));
 }
 
+BOOST_AUTO_TEST_CASE(inc_overflow)
+{
+	char const* sourceCode = R"(
+		contract C {
+			function f(uint x) returns(uint) {
+				return x++;
+			}
+		}
+	)";
+	compileAndRun(sourceCode, 0, "C");
+	// throws
+	BOOST_CHECK(callContractFunction("f(uint256)", u256(0) - u256(1)) == encodeArgs());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
