@@ -3,6 +3,7 @@
 Features:
  * Limit the number of warnings raised for creating abstract contracts.
  * Inline Assembly: Issue warning for using jump labels (already existed for jump instructions).
+ * Inline assembly: Support bitwise shift operators (EIP145).
  * SMT Checker: If-else branch conditions are taken into account in the SMT encoding of the program
    variables.
 
