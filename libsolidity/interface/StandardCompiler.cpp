@@ -160,6 +160,21 @@ Json::Value collectEVMObject(eth::LinkerObject const& _object, string const* _so
 	return output;
 }
 
+Json::Value compileJulia(Json::Value const& _input)
+{
+	if (!_input["source"].isString())
+		return formatFatalError("JSONError", "Source missing.");
+
+	Json::Value output;
+	Julia::AST ast = Julia::Parser(_input["source"]);
+	output["julia"] = Julia::Printer(ast);
+	output["evm"] = Julia::EVM::Codegen(ast);
+	output["evm15"] = Julia::EVM15::Codegen(ast);
+	output["ewasm"] = Json::objectValue;
+	output["ewasm"]["wast"] = Julia::WebAssembly::Codegen(ast));
+	return output;
+}
+
 }
 
 Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
@@ -169,8 +184,11 @@ Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
 	if (!_input.isObject())
 		return formatFatalError("JSONError", "Input is not a JSON object.");
 
+	if (_input["language"] == "Julia")
+		return compileJulia(_input);
+
 	if (_input["language"] != "Solidity")
-		return formatFatalError("JSONError", "Only \"Solidity\" is supported as a language.");
+		return formatFatalError("JSONError", "Only \"Solidity\" or \"Julia\" is supported as a language.");
 
 	Json::Value const& sources = _input["sources"];
 	if (!sources)
