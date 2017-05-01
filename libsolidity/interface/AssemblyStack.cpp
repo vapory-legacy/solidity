@@ -33,6 +33,7 @@
 
 #include <libjulia/backends/evm/EVMCodeTransform.h>
 #include <libjulia/backends/evm/EVMAssembly.h>
+#include <libjulia/backends/webassembly/WebAssembly.h>
 
 using namespace std;
 using namespace dev;
@@ -106,7 +107,10 @@ MachineAssemblyObject AssemblyStack::assemble(Machine _machine) const
 		return object;
 	}
 	case Machine::eWasm:
-		solUnimplemented("eWasm backend is not yet implemented.");
+		MachineAssemblyObject object;
+		object.assembly = julia::WebAssembly().assemble(*m_parserResult);
+		/// TODO: fill out the bytecode
+		return object;
 	}
 	// unreachable
 	return MachineAssemblyObject();
