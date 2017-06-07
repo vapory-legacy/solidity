@@ -30,6 +30,7 @@ namespace dev
 {
 namespace solidity
 {
+enum class Instruction: uint8_t;
 class ErrorReporter;
 namespace assembly
 {
@@ -61,6 +62,10 @@ public:
 		std::make_shared<Context>()
 	)
 	{
+		m_builtinFunctions["abort"] = solidity::Instruction::INVALID;
+		m_builtinFunctions["discardu256"] = solidity::Instruction::POP;
+		m_builtinFunctions["mulu256"] = solidity::Instruction::MUL;
+		m_builtinFunctions["divu256"] = solidity::Instruction::DIV;
 	}
 
 protected:
@@ -143,6 +148,7 @@ private:
 	/// (EVM 1.0 or 1.5).
 	int m_stackAdjustment = 0;
 	std::shared_ptr<Context> m_context;
+	std::map<std::string, solidity::Instruction> m_builtinFunctions;
 };
 
 }
