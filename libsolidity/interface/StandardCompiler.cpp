@@ -22,6 +22,7 @@
 
 #include <libsolidity/interface/StandardCompiler.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
+#include <libsolidity/interface/AssemblyStack.h>
 #include <libsolidity/ast/ASTJsonConverter.h>
 #include <libevmasm/Instruction.h>
 #include <libdevcore/JSON.h>
@@ -166,12 +167,41 @@ Json::Value compileJulia(Json::Value const& _input)
 		return formatFatalError("JSONError", "Source missing.");
 
 	Json::Value output;
-	Julia::AST ast = Julia::Parser(_input["source"]);
-	output["julia"] = Julia::Printer(ast);
-	output["evm"] = Julia::EVM::Codegen(ast);
-	output["evm15"] = Julia::EVM15::Codegen(ast);
-	output["ewasm"] = Json::objectValue;
-	output["ewasm"]["wast"] = Julia::WebAssembly::Codegen(ast));
+
+	AssemblyStack stack(AssemblyStack::Language::JULIA);
+	if (!stack.parseAndAnalyze("", _input["source"].asString()))
+	{
+		Json::Value errors = Json::arrayValue;
+		auto scannerFromSourceName = [&](string const&) -> solidity::Scanner const& { return stack.scanner(); };
+		for (auto const& error: stack.errors())
+		{
+			auto err = dynamic_pointer_cast<Error const>(error);
+
+			errors.append(formatErrorWithException(
+				*error,
+				err->type() == Error::Type::Warning,
+				err->typeName(),
+				"general",
+				"",
+				scannerFromSourceName
+			));
+		}
+		output["errors"] = errors;
+		return output;
+	}
+
+	output["julia"] = stack.print();
+
+	auto evm10 = stack.assemble(AssemblyStack::Machine::EVM);
+	output["evm"] = evm10.toHex();
+
+	auto evm15 = stack.assemble(AssemblyStack::Machine::EVM15);
+	output["evm15"] = evm15.toHex();
+
+//	auto ewasm = stack.assemble(AssemblyStack::Machine::eWasm);
+//	output["ewasm"] = Json::objectValue;
+//	output["ewasm"]["wast"] = ewasm.source;
+
 	return output;
 }
 
