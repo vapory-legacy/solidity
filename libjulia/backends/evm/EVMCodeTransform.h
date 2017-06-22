@@ -62,10 +62,6 @@ public:
 		std::make_shared<Context>()
 	)
 	{
-		m_builtinFunctions["abort"] = solidity::Instruction::INVALID;
-		m_builtinFunctions["discardu256"] = solidity::Instruction::POP;
-		m_builtinFunctions["mulu256"] = solidity::Instruction::MUL;
-		m_builtinFunctions["divu256"] = solidity::Instruction::DIV;
 	}
 
 protected:
@@ -85,15 +81,7 @@ protected:
 		ExternalIdentifierAccess const& _identifierAccess,
 		int _stackAdjustment,
 		std::shared_ptr<Context> _context
-	):
-		m_assembly(_assembly),
-		m_info(_analysisInfo),
-		m_julia(_julia),
-		m_evm15(_evm15),
-		m_identifierAccess(_identifierAccess),
-		m_stackAdjustment(_stackAdjustment),
-		m_context(_context)
-	{}
+	);
 
 public:
 	void operator()(solidity::assembly::Instruction const& _instruction);
