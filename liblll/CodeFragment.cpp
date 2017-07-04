@@ -36,6 +36,20 @@ using namespace std;
 using namespace dev;
 using namespace dev::eth;
 
+namespace
+{
+
+sp::utree getUtree(sp::utree const& _t, size_t _index)
+{
+	size_t c = 0;
+	for (auto const& i: _t)
+		if (c++ == _index)
+			return i;
+	BOOST_THROW_EXCEPTION(IncorrectParameterCount());
+}
+
+}
+
 void CodeFragment::finalise(CompilerState const& _cs)
 {
 	if (_cs.usedAlloc && _cs.vars.size() && !m_finalised)
@@ -233,10 +247,7 @@ void CodeFragment::constructOperation(sp::utree const& _t, CompilerState& _s)
 		{
 			if (_t.size() != 3)
 				error<IncorrectParameterCount>(us);
-			int c = 0;
-			for (auto const& i: _t)
-				if (c++ == 2)
-					m_asm.append(CodeFragment(i, _s, m_readFile, false).m_asm);
+			m_asm.append(CodeFragment(getUtree(_t, 2), _s, m_readFile, false).m_asm);
 			m_asm.append((u256)varAddress(firstAsString(), true));
 			m_asm.append(Instruction::MSTORE);
 		}
