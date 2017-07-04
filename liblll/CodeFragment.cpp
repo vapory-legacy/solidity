@@ -266,6 +266,28 @@ void CodeFragment::constructOperation(sp::utree const& _t, CompilerState& _s)
 			m_asm.append((u256)varAddress(firstAsString()));
 			m_asm.append(Instruction::MLOAD);
 		}
+		else if (us == "WITH")
+		{
+			if (_t.size() != 4)
+				error<IncorrectParameterCount>();
+			string key = firstAsString();
+			if (_s.vars.find(key) != _s.vars.end())
+				error<InvalidName>(string("Symbol already used: ") + key);
+
+			// Create variable
+			m_asm.append(CodeFragment(getUtree(_t, 2), _s, false).m_asm);
+			m_asm.append((u256)varAddress(key, true));
+			m_asm.append(Instruction::MSTORE);
+
+			// Insert sub with variable access, but new state
+			CompilerState ns = _s;
+			m_asm.append(CodeFragment(getUtree(_t, 3), ns).m_asm);
+
+			// Remove variable
+			auto it = _s.vars.find(key);
+			if (it != _s.vars.end())
+				_s.vars.erase(it);
+		}
 		else if (us == "REF")
 			m_asm.append((u256)varAddress(firstAsString()));
 		else if (us == "DEF")
