@@ -240,6 +240,14 @@ void CodeFragment::constructOperation(sp::utree const& _t, CompilerState& _s)
 			m_asm.append((u256)varAddress(firstAsString(), true));
 			m_asm.append(Instruction::MSTORE);
 		}
+		else if (us == "UNSET")
+		{
+			if (_t.size() != 2)
+				error<IncorrectParameterCount>();
+			auto it = _s.vars.find(firstAsString());
+			if (it != _s.vars.end())
+				_s.vars.erase(it);
+		}
 		else if (us == "GET")
 		{
 			if (_t.size() != 2)
