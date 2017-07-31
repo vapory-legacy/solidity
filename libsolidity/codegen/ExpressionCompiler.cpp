@@ -902,6 +902,41 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			m_context << success;
 			break;
 		}
+		case FunctionType::Kind::ABIEncode:
+		case FunctionType::Kind::ABIEncodePacked:
+		{
+			TypePointers argumentTypes;
+			for (auto const& arg: arguments)
+			{
+				arg->accept(*this);
+				argumentTypes.push_back(arg->annotation().type);
+			}
+			utils().fetchFreeMemoryPointer();
+			// stack now: <memory pointer>
+
+			// adjust by 32 bytes to accommodate the length
+			m_context << u256(32) << Instruction::ADD;
+			if (function.kind() == FunctionType::Kind::ABIEncode)
+				utils().encodeToMemory(argumentTypes, TypePointers(), true, false);
+			else
+				utils().encodeToMemory(argumentTypes, TypePointers(), false, true);
+			utils().toSizeAfterFreeMemoryPointer();
+			// stack now: <memory size> <memory pointer>
+
+			// adjust length to create the `bytes` payload size
+			m_context << u256(32) << Instruction::DUP3 << Instruction::SUB;
+			// save the size in the first slot
+			// valu offset mstore
+			m_context << Instruction::DUP2 << Instruction::MSTORE;
+
+			// stack now: <memory size> <memory pointer>
+			// mark the memory used (and drop the size)
+			m_context << Instruction::SWAP1 << Instruction::DUP2 << Instruction::ADD;
+			utils().storeFreeMemoryPointer();
+
+			// stack now: <memory pointer>
+			break;
+		}
 		default:
 			solAssert(false, "Invalid function type.");
 		}

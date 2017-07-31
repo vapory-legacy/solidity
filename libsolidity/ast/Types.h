@@ -892,7 +892,9 @@ public:
 		ByteArrayPush, ///< .push() to a dynamically sized byte array in storage
 		ObjectCreation, ///< array creation using new
 		Assert, ///< assert()
-		Require ///< require()
+		Require, ///< require()
+		ABIEncode,
+		ABIEncodePacked
 	};
 
 	virtual Category category() const override { return Category::Function; }
@@ -1023,7 +1025,7 @@ public:
 	ASTPointer<ASTString> documentation() const;
 
 	/// true iff arguments are to be padded to multiples of 32 bytes for external calls
-	bool padArguments() const { return !(m_kind == Kind::SHA3 || m_kind == Kind::SHA256 || m_kind == Kind::RIPEMD160); }
+	bool padArguments() const { return !(m_kind == Kind::SHA3 || m_kind == Kind::SHA256 || m_kind == Kind::RIPEMD160 || m_kind == Kind::ABIEncodePacked); }
 	bool takesArbitraryParameters() const { return m_arbitraryParameters; }
 	bool gasSet() const { return m_gasSet; }
 	bool valueSet() const { return m_valueSet; }
@@ -1176,7 +1178,7 @@ private:
 class MagicType: public Type
 {
 public:
-	enum class Kind { Block, Message, Transaction };
+	enum class Kind { Block, Message, Transaction, ABI };
 	virtual Category category() const override { return Category::Magic; }
 
 	explicit MagicType(Kind _kind): m_kind(_kind) {}
