@@ -36,14 +36,21 @@ fi
 
 SOLJSON="$1"
 
-DIR=$(mktemp -d)
-(
-    echo "Running Zeppelin tests..."
-    git clone --depth 1 https://github.com/OpenZeppelin/zeppelin-solidity.git "$DIR"
-    cd "$DIR"
-    npm install
-    find . -name soljson.js -exec cp "$SOLJSON" {} \;
+function test_truffle
+{
+    name="$1"
+    repo="$2"
+    echo "Running $name tests..."
+    DIR=$(mktemp -d)
+    (
+      git clone --depth 1 "$repo" "$DIR"
+      cd "$DIR"
+      npm install
+      find . -name soljson.js -exec cp "$SOLJSON" {} \;
+      npm run test
+    )
+    rm -rf "$DIR"
+}
 
-    npm run test
-)
-rm -rf "$DIR"
+test_truffle Zeppelin https://github.com/OpenZeppelin/zeppelin-solidity.git
+test_truffle Gnosis https://github.com/gnosis/gnosis-contracts.git
