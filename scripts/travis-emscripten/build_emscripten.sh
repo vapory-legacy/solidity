@@ -62,9 +62,8 @@ cd $WORKSPACE
 mkdir -p build
 cd build
 cmake \
-  -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/emscripten.cmake \
   -DCMAKE_BUILD_TYPE=Release \
-  -DEMSCRIPTEN=1 \
   -DBoost_FOUND=1 \
   -DBoost_USE_STATIC_LIBS=1 \
   -DBoost_USE_STATIC_RUNTIME=1 \
@@ -79,7 +78,6 @@ cmake \
   -DBoost_SYSTEM_LIBRARIES="$WORKSPACE"/boost_1_57_0/libboost_system.a \
   -DBoost_UNIT_TEST_FRAMEWORK_LIBRARY="$WORKSPACE"/boost_1_57_0/libboost_unit_test_framework.a \
   -DBoost_UNIT_TEST_FRAMEWORK_LIBRARIES="$WORKSPACE"/boost_1_57_0/libboost_unit_test_framework.a \
-  -DTESTS=0 \
   ..
 make -j 4
 
