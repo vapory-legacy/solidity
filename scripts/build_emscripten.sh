@@ -30,5 +30,5 @@ set -e
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
     ./scripts/travis-emscripten/install_deps.sh
-    docker run -v $(pwd):/src trzeci/emscripten:sdk-tag-1.35.4-64bit ./scripts/travis-emscripten/build_emscripten.sh
+    docker run -v $(pwd):/src trzeci/emscripten:sdk-tag-1.37.19-64bit ./scripts/travis-emscripten/build_emscripten.sh
 fi
