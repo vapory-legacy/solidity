@@ -10520,6 +10520,23 @@ BOOST_AUTO_TEST_CASE(snark)
 	BOOST_CHECK(callContractFunction("verifyTx()") == encodeArgs(true));
 }
 
+BOOST_AUTO_TEST_CASE(abi_encode)
+{
+	char const* sourceCode = R"(
+		contract C {
+			function f() returns (bytes) {
+				return abi.encode(1, 2);
+			}
+			function g() returns (bytes) {
+				return abi.encodePacked(uint256(1), uint256(2));
+			}
+		}
+	)";
+	compileAndRun(sourceCode, 0, "C");
+	ABI_CHECK(callContractFunction("f()"), encodeArgs(u256(32), u256(64), u256(1), u256(2)));
+	ABI_CHECK(callContractFunction("g()"), encodeArgs(u256(32), u256(64), u256(1), u256(2)));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
