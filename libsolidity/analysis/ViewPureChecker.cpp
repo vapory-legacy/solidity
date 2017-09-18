@@ -277,7 +277,7 @@ void ViewPureChecker::endVisit(MemberAccess const& _memberAccess)
 		break;
 	case Type::Category::Magic:
 		// we can ignore the kind of magic and only look at the name of the member
-		if (member != "data" && member != "sig" && member != "blockhash")
+		if (member != "encode" && member != "encodePacked" && member != "data" && member != "sig" && member != "blockhash")
 			mutability = StateMutability::View;
 		break;
 	case Type::Category::Struct:
