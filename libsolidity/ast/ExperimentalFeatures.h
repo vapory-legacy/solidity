@@ -29,8 +29,9 @@ namespace solidity
 
 enum class ExperimentalFeature
 {
-	SMTChecker,
 	ABIEncoderV2, // new ABI encoder that makes use of JULIA
+	SMTChecker,
+	STATICCALL, // use STATICCALL for view and pure functions
 	V050, // v0.5.0 breaking changes
 	Test,
 	TestOnlyAnalysis
@@ -44,8 +45,9 @@ static const std::map<ExperimentalFeature, bool> ExperimentalFeatureOnlyAnalysis
 
 static const std::map<std::string, ExperimentalFeature> ExperimentalFeatureNames =
 {
-	{ "SMTChecker", ExperimentalFeature::SMTChecker },
 	{ "ABIEncoderV2", ExperimentalFeature::ABIEncoderV2 },
+	{ "SMTChecker", ExperimentalFeature::SMTChecker },
+	{ "STATICCALL", ExperimentalFeature::STATICCALL },
 	{ "v0.5.0", ExperimentalFeature::V050 },
 	{ "__test", ExperimentalFeature::Test },
 	{ "__testOnlyAnalysis", ExperimentalFeature::TestOnlyAnalysis },
