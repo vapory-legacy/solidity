@@ -917,9 +917,15 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// adjust by 32 bytes to accommodate the length
 			m_context << u256(32) << Instruction::ADD;
 			if (function.kind() == FunctionType::Kind::ABIEncode)
-				utils().encodeToMemory(argumentTypes, TypePointers(), true, false);
+			{
+				solAssert(function.padArguments(), "");
+				utils().abiEncode(argumentTypes, TypePointers());
+			}
 			else
-				utils().encodeToMemory(argumentTypes, TypePointers(), false, true);
+			{
+				solAssert(!function.padArguments(), "");
+				utils().packedEncode(argumentTypes, TypePointers());
+			}
 			utils().toSizeAfterFreeMemoryPointer();
 			// stack now: <memory size> <memory pointer>
 

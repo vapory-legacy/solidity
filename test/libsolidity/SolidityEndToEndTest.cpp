@@ -10537,6 +10537,32 @@ BOOST_AUTO_TEST_CASE(abi_encode)
 	ABI_CHECK(callContractFunction("g()"), encodeArgs(u256(32), u256(64), u256(1), u256(2)));
 }
 
+BOOST_AUTO_TEST_CASE(abi_encode_complex_call)
+{
+	char const* sourceCode = R"(
+		contract C {
+			function f(uint8 a, string b, string c) {
+				require(a == 42);
+				require(bytes(b).length == 2);
+				require(bytes(b)[0] == 72); // 'H'
+				require(bytes(b)[1] == 101); // 'e'
+				require(keccak256(b) == keccak256(c));
+			}
+			function g(uint8 a, string b) returns (bool) {
+				bytes request = abi.encode(
+					bytes4(keccak256(abi.encodePacked("f(uint8,string)"))),
+					a,
+					b,
+					"He"
+				);
+				return this.call(request);
+			}
+		}
+	)";
+	compileAndRun(sourceCode, 0, "C");
+	ABI_CHECK(callContractFunction("g(uint8,string)", u256(42), u256(0x40), u256(2), string("He")), encodeArgs(u256(1)));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
