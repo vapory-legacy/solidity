@@ -943,6 +943,16 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// stack now: <memory pointer>
 			break;
 		}
+		case FunctionType::Kind::ABIEncodeSelector:
+		{
+			utils().fetchFreeMemoryPointer();
+			utils().abiEncode(TypePointers{arguments[0]->type}, TypePointers());
+			utils().toSizeAfterFreeMemoryPointer();
+			m_context << Instruction::KECCAK256;
+			// mask bytes32 to bytes4
+			m_context << (u256(0xffffffff) << (256 - 32)) << Instruction::AND;
+			break;
+		}
 		default:
 			solAssert(false, "Invalid function type.");
 		}

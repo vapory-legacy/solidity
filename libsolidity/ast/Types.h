@@ -894,7 +894,8 @@ public:
 		Assert, ///< assert()
 		Require, ///< require()
 		ABIEncode,
-		ABIEncodePacked
+		ABIEncodePacked,
+		ABIEncodeSelector
 	};
 
 	virtual Category category() const override { return Category::Function; }
