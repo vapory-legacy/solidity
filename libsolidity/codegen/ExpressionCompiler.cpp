@@ -904,18 +904,26 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		}
 		case FunctionType::Kind::ABIEncode:
 		case FunctionType::Kind::ABIEncodePacked:
+		case FunctionType::Kind::ABIEncodeWithSelector:
 		{
+			// handle the special case when 
+			bool hasSelector = function.kind() == FunctionType::Kind::ABIEncodeWithSelector && arguments.size > 0;
+
 			TypePointers argumentTypes;
-			for (auto const& arg: arguments)
+			for (unsigned i = 0; i < arguments.size(); ++i)
 			{
+				auto const& arg = arguments[i];
 				arg->accept(*this);
-				argumentTypes.push_back(arg->annotation().type);
+				// Do not keep the selector as part of the ABI encoded args
+				if (i > 0 || (i == 0 && !hasSelector)
+					argumentTypes.push_back(arg->annotation().type);
 			}
 			utils().fetchFreeMemoryPointer();
-			// stack now: <memory pointer>
+			// stack now: <arg1> .. <argN> <memory pointer>
 
-			// adjust by 32 bytes to accommodate the length
-			m_context << u256(32) << Instruction::ADD;
+			// adjust by 32(+4) bytes to accommodate the length(+selector)
+			m_context << u256(32 + (hasSelector ? 4 : 0)) << Instruction::ADD;
+
 			if (function.kind() == FunctionType::Kind::ABIEncode)
 			{
 				solAssert(function.padArguments(), "");
@@ -927,13 +935,27 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				utils().packedEncode(argumentTypes, TypePointers());
 			}
 			utils().toSizeAfterFreeMemoryPointer();
-			// stack now: <memory size> <memory pointer>
+			// stack now: <arg1> <memory size> <memory pointer>
 
 			// adjust length to create the `bytes` payload size
 			m_context << u256(32) << Instruction::DUP3 << Instruction::SUB;
 			// save the size in the first slot
 			// valu offset mstore
 			m_context << Instruction::DUP2 << Instruction::MSTORE;
+
+			if (hasSelector)
+			{
+				m_context << Instruction::DUP1 << Instruction::SWAP3;
+				// stack now: <memory size> <memory pointer> <memory pointer> <arg1>
+				utils.convertType(*arguments[0]->annotation().type, FixedBytesType(4));
+
+				// load current memory, mask and combine the selector
+				m_context << Instruction::DUP2 << Instruction::MLOAD;
+				m_context << (u256(s2u(-1)) >> (256 - 32)) << Instruction::AND;
+				m_context << Instruction::OR;
+
+				m_context << Instruction::SWAP1 << Insrtuction::MSTORE;
+			}
 
 			// stack now: <memory size> <memory pointer>
 			// mark the memory used (and drop the size)
@@ -943,7 +965,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// stack now: <memory pointer>
 			break;
 		}
-		case FunctionType::Kind::ABIEncodeSelector:
+		case FunctionType::Kind::ABIEncodeWithSelector:
 		{
 			utils().fetchFreeMemoryPointer();
 			utils().abiEncode(TypePointers{arguments[0]->type}, TypePointers());
