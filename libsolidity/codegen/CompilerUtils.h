@@ -106,6 +106,7 @@ public:
 		TypePointers const& _targetTypes,
 		bool _padToWords,
 		bool _copyDynamicDataInPlace,
+		bool _useSelector,
 		bool _encodeAsLibraryTypes = false
 	);
 
@@ -119,7 +120,7 @@ public:
 		bool _encodeAsLibraryTypes = false
 	)
 	{
-		encodeToMemory(_givenTypes, _targetTypes, false, true, _encodeAsLibraryTypes);
+		encodeToMemory(_givenTypes, _targetTypes, false, true, false, _encodeAsLibraryTypes);
 	}
 
 	/// Special case of @a encodeToMemory which assumes that everything is padded to words
@@ -129,10 +130,11 @@ public:
 	void abiEncode(
 		TypePointers const& _givenTypes,
 		TypePointers const& _targetTypes,
+		bool _useSelector = false,
 		bool _encodeAsLibraryTypes = false
 	)
 	{
-		encodeToMemory(_givenTypes, _targetTypes, true, false, _encodeAsLibraryTypes);
+		encodeToMemory(_givenTypes, _targetTypes, true, false, _useSelector, _encodeAsLibraryTypes);
 	}
 
 	/// Special case of @a encodeToMemory which assumes that everything is padded to words
@@ -143,6 +145,7 @@ public:
 	void abiEncodeV2(
 		TypePointers const& _givenTypes,
 		TypePointers const& _targetTypes,
+		bool _useSelector = false,
 		bool _encodeAsLibraryTypes = false
 	);
 

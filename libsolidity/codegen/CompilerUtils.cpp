@@ -164,6 +164,7 @@ void CompilerUtils::encodeToMemory(
 	TypePointers const& _targetTypes,
 	bool _padToWordBoundaries,
 	bool _copyDynamicDataInPlace,
+	bool _useSelector,
 	bool _encodeAsLibraryTypes
 )
 {
@@ -191,7 +192,7 @@ void CompilerUtils::encodeToMemory(
 	{
 		// Use the new JULIA-based encoding function
 		auto stackHeightBefore = m_context.stackHeight();
-		abiEncodeV2(_givenTypes, targetTypes, _encodeAsLibraryTypes);
+		abiEncodeV2(_givenTypes, targetTypes, _useSelector, _encodeAsLibraryTypes);
 		solAssert(stackHeightBefore - m_context.stackHeight() == sizeOnStack(_givenTypes), "");
 		return;
 	}
@@ -305,6 +306,7 @@ void CompilerUtils::encodeToMemory(
 void CompilerUtils::abiEncodeV2(
 	TypePointers const& _givenTypes,
 	TypePointers const& _targetTypes,
+	bool _useSelector,
 	bool _encodeAsLibraryTypes
 )
 {
