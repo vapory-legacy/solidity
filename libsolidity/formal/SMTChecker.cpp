@@ -34,15 +34,15 @@ using namespace std;
 using namespace dev;
 using namespace dev::solidity;
 
-SMTChecker::SMTChecker(ErrorReporter& _errorReporter, ReadCallback::Callback const& _readFileCallback):
+SMTChecker::SMTChecker(ErrorReporter& _errorReporter, map<h256, string> const& _smtlib2Responses):
 #ifdef HAVE_Z3
 	m_interface(make_shared<smt::Z3Interface>()),
 #else
-	m_interface(make_shared<smt::SMTLib2Interface>(_readFileCallback)),
+	m_interface(make_shared<smt::SMTLib2Interface>(_smtlib2Responses)),
 #endif
 	m_errorReporter(_errorReporter)
 {
-	(void)_readFileCallback;
+	(void)_smtlib2Responses;
 }
 
 void SMTChecker::analyze(SourceUnit const& _source)
@@ -50,6 +50,11 @@ void SMTChecker::analyze(SourceUnit const& _source)
 	m_variableUsage = make_shared<VariableUsage>(_source);
 	if (_source.annotation().experimentalFeatures.count(ExperimentalFeature::SMTChecker))
 		_source.accept(*this);
+}
+
+vector<string> SMTChecker::unhandledQueries()
+{
+	return m_interface->unhandledQueries();
 }
 
 void SMTChecker::endVisit(VariableDeclaration const& _varDecl)

@@ -130,6 +130,13 @@ public:
 	/// @returns true if a source object by the name already existed and was replaced.
 	bool addSource(std::string const& _name, std::string const& _content, bool _isLibrary = false);
 
+	/// Adds a response to an SMTLib2 query (identified by the hash of the query input).
+	void addSMTLib2Response(h256 const& _hash, std::string const& _response) { m_smtlib2Responses[_hash] = _response; }
+
+	/// @returns a list of unhandled queries to the SMT solver (has to be supplied in a second run
+	/// by calling @a addSMTLib2Response.
+	std::vector<std::string> const& unhandledSMTQueries() const { return m_unhandledSMTLib2Queries; }
+
 	/// Parses all source units that were added
 	/// @returns false on error.
 	bool parse();
@@ -307,7 +314,6 @@ private:
 	};
 
 	ReadCallback::Callback m_readFile;
-	ReadCallback::Callback m_smtQuery;
 	bool m_optimize = false;
 	unsigned m_optimizeRuns = 200;
 	std::set<std::string> m_requestedContractNames;
@@ -316,6 +322,8 @@ private:
 	/// "context:prefix=target"
 	std::vector<Remapping> m_remappings;
 	std::map<std::string const, Source> m_sources;
+	std::vector<std::string> m_unhandledSMTLib2Queries;
+	std::map<h256, std::string> m_smtlib2Responses;
 	std::shared_ptr<GlobalContext> m_globalContext;
 	std::map<ASTNode const*, std::shared_ptr<DeclarationContainer>> m_scopes;
 	std::vector<Source const*> m_sourceOrder;

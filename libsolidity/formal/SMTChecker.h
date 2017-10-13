@@ -38,9 +38,14 @@ class ErrorReporter;
 class SMTChecker: private ASTConstVisitor
 {
 public:
-	SMTChecker(ErrorReporter& _errorReporter, ReadCallback::Callback const& _readCallback);
+	SMTChecker(ErrorReporter& _errorReporter, std::map<h256, std::string> const& _smtlib2Responses);
 
 	void analyze(SourceUnit const& _sources);
+
+	/// This is used if the SMT solver is not directly linked into this binary.
+	/// @returns a list of inputs to the SMT solver that were not part of the argument to
+	/// the constructor.
+	std::vector<std::string> unhandledQueries();
 
 private:
 	// TODO: Check that we do not have concurrent reads and writes to a variable,
