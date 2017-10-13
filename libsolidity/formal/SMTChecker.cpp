@@ -42,7 +42,13 @@ SMTChecker::SMTChecker(ErrorReporter& _errorReporter, map<h256, string> const& _
 #endif
 	m_errorReporter(_errorReporter)
 {
-	(void)_smtlib2Responses;
+#ifdef HAVE_Z3
+	if (!_smtlib2Responses.empty())
+		m_errorReporter.warning(
+			"Query responses for smtlib2 were given in the auxiliary input, "
+			"but this Solidity binary uses the SMT solver Z3 directly."
+		);
+#endif
 }
 
 void SMTChecker::analyze(SourceUnit const& _source)
