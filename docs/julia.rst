@@ -292,8 +292,8 @@ JULIA has no support for implicit type conversion and therefore functions exists
 When converting a larger type to a shorter type a runtime exception can occur in case of an overflow.
 
 The following type conversion functions must be available:
-- ``u32tobool(x:u32) -> y:bool``
-- ``booltou32(x:bool) -> y:u32``
+- ``u32tobool(x:u32) -> y:bool`` aka``y := not(iszerou256(x))``
+- ``booltou32(x:bool) -> y:u32`` aka ``switch x case true:bool { y := 1:u256 } case false:bool { y := 0:u256 }``
 - ``u32tou64(x:u32) -> y:u64``
 - ``u64tou32(x:u64) -> y:u32``
 - etc. (TBD)
@@ -303,6 +303,14 @@ Low-level Functions
 
 The following functions must be available:
 
++---------------------------------------------------------------------------------------------------------------+
+| *Logic*                                                                                                       |
++---------------------------------------------------------------------------------------------------------------+
+| not(x:bool) -> z:bool                       | logical not                                                     |
++---------------------------------------------------------------------------------------------------------------+
+| and(x:bool, y:bool) -> z:bool               | logical and                                                     |
++---------------------------------------------------------------------------------------------------------------+
+| or(x:bool, y:bool) -> z:bool                | logical or                                                      |
 +---------------------------------------------------------------------------------------------------------------+
 | *Arithmetics*                                                                                                 |
 +---------------------------------------------------------------------------------------------------------------+
@@ -328,15 +336,17 @@ The following functions must be available:
 +---------------------------------------------------------------------------------------------------------------+
 | mulmodu256(x:u256, y:u256, m:u256) -> z:u256| (x * y) % m with arbitrary precision arithmetics                |
 +---------------------------------------------------------------------------------------------------------------+
-| ltu256(x:u256, y:u256) -> z:bool            | 1 if x < y, 0 otherwise                                         |
+| ltu256(x:u256, y:u256) -> z:bool            | true if x < y, false otherwise                                  |
 +---------------------------------------------------------------------------------------------------------------+
-| gtu256(x:u256, y:u256) -> z:bool            | 1 if x > y, 0 otherwise                                         |
+| gtu256(x:u256, y:u256) -> z:bool            | true if x > y, false otherwise                                  |
 +---------------------------------------------------------------------------------------------------------------+
-| sltu256(x:s256, y:s256) -> z:bool           | 1 if x < y, 0 otherwise, for signed numbers in two's complement |
+| sltu256(x:s256, y:s256) -> z:bool           | true if x < y, false otherwise, for signed numbers in two's complement |
 +---------------------------------------------------------------------------------------------------------------+
-| sgtu256(x:s256, y:s256) -> z:bool           | 1 if x > y, 0 otherwise, for signed numbers in two's complement |
+| sgtu256(x:s256, y:s256) -> z:bool           | true if x > y, false otherwise, for signed numbers in two's complement |
 +---------------------------------------------------------------------------------------------------------------+
-| equ256(x:u256, y:u256) -> z:bool            | 1 if x == y, 0 otherwise                                        |
+| equ256(x:u256, y:u256) -> z:bool            | true if x == y, false otherwise                                 |
++---------------------------------------------------------------------------------------------------------------+
+| iszerou256(x:u256) -> z:bool                | true if x == 0, false otherwise                                 |
 +---------------------------------------------------------------------------------------------------------------+
 | notu256(x:u256) -> z:u256                   | ~x, every bit of x is negated                                   |
 +---------------------------------------------------------------------------------------------------------------+
@@ -456,6 +466,8 @@ The following functions must be available:
 | extcodecopy(a:u256, t:u256, f:u256, s:u256) | like codecopy(t, f, s) but take code at address a               |
 +---------------------------------------------------------------------------------------------------------------+
 | *Others*                                                                                                      |
++---------------------------------------------------------------------------------------------------------------+
+| discard(unused:bool)                        | discard value                                                   |
 +---------------------------------------------------------------------------------------------------------------+
 | discardu256(unused:u256)                    | discard value                                                   |
 +---------------------------------------------------------------------------------------------------------------+
