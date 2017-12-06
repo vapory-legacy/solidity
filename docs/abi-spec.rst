@@ -448,7 +448,7 @@ would result in the JSON:
 Strict Encoding Mode
 ====================
 
-In strict encoding mode all dynamic types must be encoded at offsets taking the shortests possible paths and no gaps are allowed.
+In strict encoding mode all dynamic types must be encoded at offsets taking the shortest possible paths and no gaps are allowed.
 
 TBD examples
 
