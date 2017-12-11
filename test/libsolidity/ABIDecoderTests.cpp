@@ -785,7 +785,23 @@ BOOST_AUTO_TEST_CASE(complex_struct)
 	)
 }
 
-
+BOOST_AUTO_TEST_CASE(out_of_bounds_bool_value)
+{
+	string sourceCode = R"(
+		contract C {
+			function f(bool b) public pure returns (bool) { return b; }
+		}
+	)";
+	bool newDecoder = false;
+	BOTH_ENCODERS(
+		compileAndRun(sourceCode);
+		ABI_CHECK(callContractFunction("f(bool)", 1, 2), encodeArgs(true));
+		ABI_CHECK(callContractFunction("f(bool)", 1, 2), encodeArgs(false));
+		ABI_CHECK(callContractFunctionNoEncoding("f(bool)", bytes(32, 0)), encodeArgs(0));
+		ABI_CHECK(callContractFunctionNoEncoding("f(bool)", bytes(32, 0xff)), newDecoder ? encodeArgs() : encodeArgs(1));
+		newDecoder = true;
+	)
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
