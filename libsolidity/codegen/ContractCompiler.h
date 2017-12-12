@@ -81,10 +81,6 @@ private:
 	void appendConstructor(FunctionDefinition const& _constructor);
 	void appendFunctionSelector(ContractDefinition const& _contract);
 	void appendCallValueCheck();
-	/// Creates code that unpacks the arguments for the given function represented by a vector of TypePointers.
-	/// From memory if @a _fromMemory is true, otherwise from call data.
-	/// Expects source offset on the stack, which is removed.
-	void appendCalldataUnpacker(TypePointers const& _typeParameters, bool _fromMemory = false);
 	void appendReturnValuePacker(TypePointers const& _typeParameters, bool _isLibrary);
 
 	void registerStateVariables(ContractDefinition const& _contract);

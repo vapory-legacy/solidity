@@ -785,7 +785,46 @@ BOOST_AUTO_TEST_CASE(complex_struct)
 	)
 }
 
+BOOST_AUTO_TEST_CASE(return_dynamic_types_cross_call_simple)
+{
+	string sourceCode = R"(
+		contract C {
+			function dyn() public returns (bytes) {
+				return "1234567890123456789012345678901234567890";
+			}
+			function f() public returns (bytes) {
+				return this.dyn();
+			}
+		}
+	)";
+	NEW_ENCODER(
+		compileAndRun(sourceCode, 0, "C");
+		ABI_CHECK(callContractFunction("f()"), encodeArgs(0x20, 40, string("1234567890123456789012345678901234567890")));
+	)
+}
 
+BOOST_AUTO_TEST_CASE(return_dynamic_types_cross_call_advanced)
+{
+	string sourceCode = R"(
+		contract C {
+			function dyn() public returns (bytes a, uint b, bytes20[] c, uint d) {
+				a = "1234567890123456789012345678901234567890";
+				b = uint(-1);
+				c = new bytes20[](4);
+				c[0] = bytes20(1234);
+				c[3] = bytes20(6789);
+				d = 0x1234;
+			}
+			function f() public returns (bytes, uint, bytes20[], uint) {
+				return this.dyn();
+			}
+		}
+	)";
+	NEW_ENCODER(
+		compileAndRun(sourceCode, 0, "C");
+		ABI_CHECK(callContractFunction("f()"), encodeArgs(0x20, 40, string("1234567890123456789012345678901234567890")));
+	)
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

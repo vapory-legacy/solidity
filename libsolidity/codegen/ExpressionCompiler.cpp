@@ -1580,14 +1580,22 @@ void ExpressionCompiler::appendExternalFunctionCall(
 	bool isCallCode = funKind == FunctionType::Kind::BareCallCode || funKind == FunctionType::Kind::CallCode;
 	bool isDelegateCall = funKind == FunctionType::Kind::BareDelegateCall || funKind == FunctionType::Kind::DelegateCall;
 
+	// Size of the return data in bytes. 0 if dynamic.
 	unsigned retSize = 0;
+	bool dynamicReturnSize = false;
 	if (returnSuccessCondition)
 		retSize = 0; // return value actually is success condition
 	else
 		for (auto const& retType: _functionType.returnParameterTypes())
 		{
-			solAssert(!retType->isDynamicallySized(), "Unable to return dynamic type from external call.");
-			retSize += retType->calldataEncodedSize();
+			if (retType->isDynamicallySized())
+			{
+				dynamicReturnSize = true;
+				retSize = 0;
+				break;
+			}
+			else
+				retSize += retType->calldataEncodedSize();
 		}
 
 	// Evaluate arguments.
@@ -1641,18 +1649,6 @@ void ExpressionCompiler::appendExternalFunctionCall(
 		m_context << u256(0) << Instruction::DUP2 << Instruction::MSTORE;
 		m_context << u256(32) << Instruction::ADD;
 		utils().storeFreeMemoryPointer();
-	}
-
-	// Touch the end of the output area so that we do not pay for memory resize during the call
-	// (which we would have to subtract from the gas left)
-	// We could also just use MLOAD; POP right before the gas calculation, but the optimizer
-	// would remove that, so we use MSTORE here.
-	if (!_functionType.gasSet() && retSize > 0)
-	{
-		m_context << u256(0);
-		utils().fetchFreeMemoryPointer();
-		// This touches too much, but that way we save some rounding arithmetics
-		m_context << u256(retSize) << Instruction::ADD << Instruction::MSTORE;
 	}
 
 	// Copy function identifier to memory.
@@ -1780,18 +1776,36 @@ void ExpressionCompiler::appendExternalFunctionCall(
 	}
 	else if (!_functionType.returnParameterTypes().empty())
 	{
-		utils().fetchFreeMemoryPointer();
-		bool memoryNeeded = false;
-		for (auto const& retType: _functionType.returnParameterTypes())
+		if (dynamicReturnSize)
 		{
-			utils().loadFromMemoryDynamic(*retType, false, true, true);
-			if (dynamic_cast<ReferenceType const*>(retType.get()))
-				memoryNeeded = true;
-		}
-		if (memoryNeeded)
+			// TODO: This is quite wasteful in terms of memory.
+			// TODO: We really have to check for overflow while decoding here, since we cannot ensure
+			// that the returndata is zero-extended.
+			utils().fetchFreeMemoryPointer();
+			m_context << u256(0);
+			m_context.appendInlineAssembly(R"({
+				returndatacopy(mem, 0, returndatasize())
+				// round size to the next multiple of 32
+				newMem := add(mem, and(add(returndatasize(), 31), not(31)))
+			})", {"mem", "newMem"});
 			utils().storeFreeMemoryPointer();
+			utils().abiDecode(_functionType.returnParameterTypes(), true);
+		}
 		else
-			m_context << Instruction::POP;
+		{
+			utils().fetchFreeMemoryPointer();
+			bool memoryNeeded = false;
+			for (auto const& retType: _functionType.returnParameterTypes())
+			{
+				utils().loadFromMemoryDynamic(*retType, false, true, true);
+				if (dynamic_cast<ReferenceType const*>(retType.get()))
+					memoryNeeded = true;
+			}
+			if (memoryNeeded)
+				utils().storeFreeMemoryPointer();
+			else
+				m_context << Instruction::POP;
+		}
 	}
 }
 
