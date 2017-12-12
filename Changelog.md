@@ -1,6 +1,7 @@
 ### 0.4.20 (unreleased)
 
 Features:
+ * Limit the number of errors output in a single run to 256.
  * Inline Assembly: Issue warning for using jump labels (already existed for jump instructions).
 
 Bugfixes:
