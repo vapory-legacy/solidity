@@ -2,6 +2,7 @@
 
 Features:
  * Inline Assembly: Issue warning for using jump labels (already existed for jump instructions).
+ * Allow access to dynamically-sized data returned from Solidity function calls.
 
 Bugfixes:
  * Type Checker: Suggest the experimental ABI encoder if using ``struct``s as function parameters
