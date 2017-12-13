@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_CASE(return_dynamic_types_cross_call_simple)
 			}
 		}
 	)";
-	NEW_ENCODER(
+	BOTH_ENCODERS(
 		compileAndRun(sourceCode, 0, "C");
 		ABI_CHECK(callContractFunction("f()"), encodeArgs(0x20, 40, string("1234567890123456789012345678901234567890")));
 	)
@@ -820,9 +820,13 @@ BOOST_AUTO_TEST_CASE(return_dynamic_types_cross_call_advanced)
 			}
 		}
 	)";
-	NEW_ENCODER(
+	BOTH_ENCODERS(
 		compileAndRun(sourceCode, 0, "C");
-		ABI_CHECK(callContractFunction("f()"), encodeArgs(0x20, 40, string("1234567890123456789012345678901234567890")));
+		ABI_CHECK(callContractFunction("f()"), encodeArgs(
+			0x80, u256(-1), 0xe0, 0x1234,
+			40, string("1234567890123456789012345678901234567890"),
+			4, u256(1234) << (8 * (32 - 20)), 0, 0, u256(6789) << (8 * (32 - 20))
+		));
 	)
 }
 

@@ -2956,7 +2956,7 @@ BOOST_AUTO_TEST_CASE(mem_array_assignment_changes_base_type)
 	CHECK_ERROR(sourceCode, TypeError, "Type uint8[] memory is not implicitly convertible to expected type uint256[] memory.");
 }
 
-BOOST_AUTO_TEST_CASE(dynamic_return_types_not_possible)
+BOOST_AUTO_TEST_CASE(dynamic_return_types_possible)
 {
 	char const* sourceCode = R"(
 		contract C {
@@ -2968,7 +2968,7 @@ BOOST_AUTO_TEST_CASE(dynamic_return_types_not_possible)
 			}
 		}
 	)";
-	CHECK_ERROR(sourceCode, TypeError, "Explicit type conversion not allowed from \"inaccessible dynamic type\" to \"bytes storage pointer\".");
+	CHECK_SUCCESS(sourceCode);
 }
 
 BOOST_AUTO_TEST_CASE(memory_arrays_not_resizeable)

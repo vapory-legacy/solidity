@@ -374,6 +374,18 @@ BOOST_AUTO_TEST_CASE(assembly_staticcall)
 			}
 		}
 	)";
+	CHECK_SUCCESS_NO_WARNINGS(text);
+}
+
+BOOST_AUTO_TEST_CASE(assembly_create2)
+{
+	string text = R"(
+		contract C {
+			function i() public {
+				assembly { pop(create2(1, 2, 3, 4)) }
+			}
+		}
+	)";
 	CHECK_WARNING(text, "only available after the Metropolis");
 }
 
