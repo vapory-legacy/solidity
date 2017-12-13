@@ -2773,15 +2773,6 @@ FunctionTypePointer FunctionType::asMemberFunction(bool _inLibrary, bool _bound)
 			kind = Kind::DelegateCall;
 	}
 
-//	TypePointers returnParameterTypes = m_returnParameterTypes;
-//	if (kind != Kind::Internal)
-//	{
-//		// Alter dynamic types to be non-accessible.
-//		for (auto& param: returnParameterTypes)
-//			if (param->isDynamicallySized())
-//				param = make_shared<InaccessibleDynamicType>();
-//	}
-
 	return make_shared<FunctionType>(
 		parameterTypes,
 		m_returnParameterTypes,

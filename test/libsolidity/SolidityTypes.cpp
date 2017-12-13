@@ -149,8 +149,6 @@ BOOST_AUTO_TEST_CASE(type_identifiers)
 	BOOST_CHECK_EQUAL(MagicType(MagicType::Kind::Block).identifier(), "t_magic_block");
 	BOOST_CHECK_EQUAL(MagicType(MagicType::Kind::Message).identifier(), "t_magic_message");
 	BOOST_CHECK_EQUAL(MagicType(MagicType::Kind::Transaction).identifier(), "t_magic_transaction");
-
-	BOOST_CHECK_EQUAL(InaccessibleDynamicType().identifier(), "t_inaccessible");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

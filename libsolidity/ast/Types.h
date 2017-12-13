@@ -142,8 +142,7 @@ public:
 	{
 		Integer, RationalNumber, StringLiteral, Bool, FixedPoint, Array,
 		FixedBytes, Contract, Struct, Function, Enum, Tuple,
-		Mapping, TypeType, Modifier, Magic, Module,
-		InaccessibleDynamic
+		Mapping, TypeType, Modifier, Magic, Module
 	};
 
 	/// @{
@@ -1195,28 +1194,6 @@ public:
 
 private:
 	Kind m_kind;
-};
-
-/**
- * Special type that is used for dynamic types in returns from external function calls
- * (The EVM currently cannot access dynamically-sized return values).
- */
-class InaccessibleDynamicType: public Type
-{
-public:
-	virtual Category category() const override { return Category::InaccessibleDynamic; }
-
-	virtual std::string identifier() const override { return "t_inaccessible"; }
-	virtual bool isImplicitlyConvertibleTo(Type const&) const override { return false; }
-	virtual bool isExplicitlyConvertibleTo(Type const&) const override { return false; }
-	virtual TypePointer binaryOperatorResult(Token::Value, TypePointer const&) const override { return TypePointer(); }
-	virtual unsigned calldataEncodedSize(bool _padded) const override { (void)_padded; return 32; }
-	virtual bool canBeStored() const override { return false; }
-	virtual bool canLiveOutsideStorage() const override { return false; }
-	virtual bool isValueType() const override { return true; }
-	virtual unsigned sizeOnStack() const override { return 1; }
-	virtual std::string toString(bool) const override { return "inaccessible dynamic type"; }
-	virtual TypePointer decodingType() const override { return std::make_shared<IntegerType>(256); }
 };
 
 }
