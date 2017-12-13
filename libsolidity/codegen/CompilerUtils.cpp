@@ -168,11 +168,20 @@ void CompilerUtils::abiDecode(TypePointers const& _typeParameters, bool _fromMem
 		// Use the new JULIA-based decoding function
 		auto stackHeightBefore = m_context.stackHeight();
 		abiDecodeV2(_typeParameters, _fromMemory);
-		solAssert(m_context.stackHeight() - stackHeightBefore == sizeOnStack(_typeParameters) - 1, "");
+		solAssert(m_context.stackHeight() - stackHeightBefore == sizeOnStack(_typeParameters) - 2, "");
 		return;
 	}
 
 	//@todo this does not yet support nested dynamic arrays
+
+	// Very crude check for too short data.
+	size_t encodedSize = 0;
+	for (auto const& t: _typeParameters)
+		encodedSize += t->decodingType()->calldataEncodedSize(true);
+	m_context.appendInlineAssembly("{ if lt(len, " + to_string(encodedSize) + ") { revert(0, 0) } }", {"len"});
+
+	// Remove length from stack.
+	m_context << Instruction::POP;
 
 	// Retain the offset pointer as base_offset, the point from which the data offsets are computed.
 	m_context << Instruction::DUP1;
@@ -420,15 +429,13 @@ void CompilerUtils::abiEncodeV2(
 
 void CompilerUtils::abiDecodeV2(TypePointers const& _parameterTypes, bool _fromMemory)
 {
-	// stack: <source_offset>
+	// stack: <source_offset> <length> [stack top]
 	auto ret = m_context.pushNewTag();
+	moveIntoStack(2);
+	// stack: <return tag> <source_offset> <length> [stack top]
+	m_context << Instruction::DUP2 << Instruction::ADD;
 	m_context << Instruction::SWAP1;
-	if (_fromMemory)
-		// TODO pass correct size for the memory case
-		m_context << (u256(1) << 63);
-	else
-		m_context << Instruction::CALLDATASIZE;
-	m_context << Instruction::SWAP1;
+	// stack: <return tag> <end> <start>
 	string decoderName = m_context.abiFunctions().tupleDecoder(_parameterTypes, _fromMemory);
 	m_context.appendJumpTo(m_context.namedTag(decoderName));
 	m_context.adjustStackOffset(int(sizeOnStack(_parameterTypes)) - 3);

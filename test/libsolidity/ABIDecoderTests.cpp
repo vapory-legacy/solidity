@@ -449,13 +449,11 @@ BOOST_AUTO_TEST_CASE(short_input_value_type)
 			function f(uint a, uint b) public pure returns (uint) { return a; }
 		}
 	)";
-	bool newDecoder = false;
 	BOTH_ENCODERS(
 		compileAndRun(sourceCode);
 		ABI_CHECK(callContractFunction("f(uint256,uint256)", 1, 2), encodeArgs(1));
 		ABI_CHECK(callContractFunctionNoEncoding("f(uint256,uint256)", bytes(64, 0)), encodeArgs(0));
-		ABI_CHECK(callContractFunctionNoEncoding("f(uint256,uint256)", bytes(63, 0)), newDecoder ? encodeArgs() : encodeArgs(0));
-		newDecoder = true;
+		ABI_CHECK(callContractFunctionNoEncoding("f(uint256,uint256)", bytes(63, 0)), encodeArgs());
 	)
 }
 
