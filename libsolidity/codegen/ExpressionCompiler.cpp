@@ -1796,12 +1796,17 @@ void ExpressionCompiler::appendExternalFunctionCall(
 		{
 			utils().fetchFreeMemoryPointer();
 			bool memoryNeeded = false;
+			size_t encodedSize = 0;
 			for (auto const& retType: _functionType.returnParameterTypes())
 			{
+				encodedSize += retType->decodingType()->calldataEncodedSize(true);
 				utils().loadFromMemoryDynamic(*retType, false, true, true);
 				if (dynamic_cast<ReferenceType const*>(retType.get()))
 					memoryNeeded = true;
 			}
+			m_context.appendInlineAssembly("{ if lt(returndatasize(), " + to_string(encodedSize) + ") { revert(0, 0) } }");
+
+			// stack: mem_end
 			if (memoryNeeded)
 				utils().storeFreeMemoryPointer();
 			else
