@@ -42,21 +42,29 @@ using namespace dev::solidity;
 FullInliner::FullInliner(Block& _ast):
 	m_ast(_ast)
 {
-	solAssert(m_ast.statements.size() >= 1, "");
 	m_nameDispenser.m_usedNames = NameCollector(m_ast).names();
 
-	for (size_t i = 1; i < m_ast.statements.size(); ++i)
-	{
-		FunctionDefinition& fun = boost::get<FunctionDefinition>(m_ast.statements.at(i));
-		m_functions[fun.name] = &fun;
-		m_functionsToVisit.insert(&fun);
-	}
+	for (auto& statement: m_ast.statements)
+		if (statement.type() == typeid(FunctionDefinition))
+		{
+			FunctionDefinition& fun = boost::get<FunctionDefinition>(statement);
+			m_functions[fun.name] = &fun;
+			m_functionsToVisit.insert(&fun);
+		}
 }
 
 void FullInliner::run()
 {
-	solAssert(m_ast.statements[0].type() == typeid(Block), "");
-	InlineModifier(*this, m_nameDispenser, "").visit(m_ast.statements[0]);
+	for (auto& statement: m_ast.statements)
+		if (statement.type() == typeid(Block))
+			InlineModifier(*this, m_nameDispenser, "").visit(statement);
+		else
+		{
+			solAssert(
+				statement.type() == typeid(FunctionDefinition),
+				"Invalid top-level element. Inline requires function hoister and grouper."
+			);
+		}
 	while (!m_functionsToVisit.empty())
 		handleFunction(**m_functionsToVisit.begin());
 }

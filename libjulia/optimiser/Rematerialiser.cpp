@@ -24,6 +24,7 @@
 #include <libjulia/optimiser/NameCollector.h>
 
 #include <libsolidity/inlineasm/AsmData.h>
+#include <libsolidity/inlineasm/AsmPrinter.h>
 
 #include <libjulia/optimiser/Semantics.h>
 
@@ -129,10 +130,18 @@ void Rematerialiser::handleAssignment(set<string> const& _variables, Expression*
 	if (_variables.size() == 1)
 	{
 		string const& name = *_variables.begin();
-		if (movableChecker.movable() && _value)
+		// Expression has to be movable and cannot contain a reference
+		// to the variable that will be assigned to.
+		// TODO: Add a test for that
+		if (_value && movableChecker.movable() && !movableChecker.referencedVariables().count(name))
+		{
 			// TODO Plus heuristic about size of value
 			// TODO If _value is null, we could use zero.
 			m_substitutions[name] = _value;
+			cout << "Substituting " << name << " for ";
+			solidity::assembly::AsmPrinter p;
+			cout << boost::apply_visitor(p, *_value) << endl << "----" << endl;
+		}
 		else
 			m_substitutions.erase(name);
 	}
