@@ -520,10 +520,7 @@ void AsmAnalyzer::expectValidType(string const& type, SourceLocation const& _loc
 void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocation const& _location)
 {
 	static set<solidity::Instruction> futureInstructions{
-		solidity::Instruction::CREATE2,
-		solidity::Instruction::RETURNDATACOPY,
-		solidity::Instruction::RETURNDATASIZE,
-		solidity::Instruction::STATICCALL
+		solidity::Instruction::CREATE2
 	};
 	if (futureInstructions.count(_instr))
 		m_errorReporter.warning(
