@@ -117,6 +117,7 @@ void ContractCompiler::appendCallValueCheck()
 {
 	// Throw if function is not payable but call contained ether.
 	m_context << Instruction::CALLVALUE;
+	// TODO: error message?
 	m_context.appendConditionalRevert();
 }
 
@@ -282,6 +283,7 @@ void ContractCompiler::appendFunctionSelector(ContractDefinition const& _contrac
 		m_context << Instruction::STOP;
 	}
 	else
+		// TODO: error message here?
 		m_context.appendRevert();
 
 	for (auto const& it: interfaceFunctions)
