@@ -322,6 +322,7 @@ Global Variables
 - ``assert(bool condition)``: abort execution and revert state changes if condition is ``false`` (use for internal error)
 - ``require(bool condition)``: abort execution and revert state changes if condition is ``false`` (use for malformed input or error in external component)
 - ``revert()``: abort execution and revert state changes
+- ``revert(string)``: abort execution and revert state changes providing an explanatory string
 - ``keccak256(...) returns (bytes32)``: compute the Ethereum-SHA-3 (Keccak-256) hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 - ``sha3(...) returns (bytes32)``: an alias to ``keccak256``
 - ``sha256(...) returns (bytes32)``: compute the SHA-256 hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
