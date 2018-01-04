@@ -163,6 +163,14 @@ Rules::Rules()
 		{{Instruction::AND, {{{X}, {Instruction::OR, {X, Y}}}}}, [=]{ return X; }},
 		{{Instruction::AND, {{{X}, {Instruction::NOT, {X}}}}}, [=]{ return u256(0); }},
 		{{Instruction::OR, {{{X}, {Instruction::NOT, {X}}}}}, [=]{ return ~u256(0); }},
+
+		{{Instruction::MOD, {X, A}}, [=]() -> Pattern {
+			// if power of 2, transform to AND
+			// this optimisation makes sense as long as the gas cost of AND is less than MOD
+			if (A.d() > 0 && (A.d() & (A.d() - 1)) == 0)
+				return {Instruction::AND, {X, A.d() - 1}};
+			return {Instruction::MOD, {X, A}};
+		}},
 	});
 
 	// Double negation of opcodes with binary result
