@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(assembly_staticcall)
 			}
 		}
 	)";
-	CHECK_WARNING(text, "only available after the Metropolis");
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(assembly_jump)
