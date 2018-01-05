@@ -124,14 +124,14 @@ Rules::Rules()
 			return u256(boost::multiprecision::bit_test(B.d(), testBit) ? B.d() | ~mask : B.d() & mask);
 		}},
 		{{Instruction::SHL, {A, B}}, [=]{
-			if (B.d() > 255)
+			if (A.d() > 255)
 				return u256(0);
-			return u256(bigint(A.d()) << unsigned(B.d()));
+			return u256(bigint(B.d()) << unsigned(A.d()));
 		}},
 		{{Instruction::SHR, {A, B}}, [=]{
-			if (B.d() > 255)
+			if (A.d() > 255)
 				return u256(0);
-			return A.d() >> unsigned(B.d());
+			return B.d() >> unsigned(A.d());
 		}},
 
 		// invariants involving known constants (commutative instructions will be checked with swapped operants too)
