@@ -138,9 +138,6 @@ void Rematerialiser::handleAssignment(set<string> const& _variables, Expression*
 			// TODO Plus heuristic about size of value
 			// TODO If _value is null, we could use zero.
 			m_substitutions[name] = _value;
-			cout << "Substituting " << name << " for ";
-			solidity::assembly::AsmPrinter p;
-			cout << boost::apply_visitor(p, *_value) << endl << "----" << endl;
 		}
 		else
 			m_substitutions.erase(name);
