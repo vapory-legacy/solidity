@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Specific AST walker that collects all defined names.
+ * Specific AST walkers that collect facts about identifiers and definitions.
  */
 
 #pragma once
@@ -49,6 +49,23 @@ private:
 };
 
 /**
+ * Specific AST walker that counts all references to all declarations.
+ */
+class ReferencesCounter: public ASTWalker
+{
+public:
+	using ASTWalker::operator ();
+	virtual void operator()(Identifier const& _identifier);
+	virtual void operator()(FunctionCall const& _funCall);
+
+	static std::map<std::string, size_t> countReferences(Block const& _block);
+	static std::map<std::string, size_t> countReferences(Expression const& _expression);
+
+	std::map<std::string, size_t> const& references() const { return m_references; }
+private:
+	std::map<std::string, size_t> m_references;
+};
+
  * Specific AST walker that finds all variables that are assigned to.
  */
 class Assignments: public ASTWalker
