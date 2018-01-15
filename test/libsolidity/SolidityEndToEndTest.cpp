@@ -10556,6 +10556,43 @@ BOOST_AUTO_TEST_CASE(snark)
 	BOOST_CHECK(callContractFunction("verifyTx()") == encodeArgs(true));
 }
 
+BOOST_AUTO_TEST_CASE(staticcall_for_view_and_pure)
+{
+	char const* sourceCode = R"(
+		pragma experimental STATICCALL;
+		contract C {
+			uint x;
+			function f() returns (uint) {
+				x = 3;
+				return 1;
+			}
+		}
+		interface CView {
+			function f() view returns (uint);
+		}
+		interface CPure {
+			function f() pure returns (uint);
+		}
+		contract D {
+			function f() returns (uint) {
+				return (new C()).f();
+			}
+			function fview() returns (uint) {
+				return (CView(new C())).f();
+			}
+			function fpure() returns (uint) {
+				return (CPure(new C())).f();
+			}
+		}
+	)";
+	compileAndRun(sourceCode, 0, "D");
+	// This should work (called via CALL)
+	ABI_CHECK(callContractFunction("f()"), encodeArgs(1));
+	// These should throw (called via STATICCALL)
+	ABI_CHECK(callContractFunction("fview()"), encodeArgs());
+	ABI_CHECK(callContractFunction("fpure()"), encodeArgs());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
