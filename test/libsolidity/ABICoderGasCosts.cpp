@@ -61,9 +61,7 @@ BOOST_AUTO_TEST_CASE(ERC20)
 	BOTH_ENCODERS(
 		compileAndRun(sourceCode);
 		ABI_CHECK(callContractFunction(
-			"f(uint256,uint16,uint24,int24,bytes3,bool,address)",
-			1, 2, 3, 4, string("abc"), true, u160(m_contractAddress)
-		), encodeArgs(u256(20)));
+			"totalSupply()"), encodeArgs(0));
 	)
 }
 
