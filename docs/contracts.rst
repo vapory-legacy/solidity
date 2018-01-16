@@ -472,8 +472,13 @@ The following statements are considered modifying the state:
 .. note::
   Getter methods are marked ``view``.
 
-.. warning::
-  The compiler does not enforce yet that a ``view`` method is not modifying state.
+.. note::
+  If invalid explicit type conversions are used, state modifications are possible
+  even though a ``view`` function was called.
+  You can switch the compiler to use STATICCALL when calling such functions and thus
+  prevent modifications to the state on the level of the EVM by adding
+  ``pragma experimental STATICCALL;``
+
 
 .. index:: ! pure function, function;pure
 
@@ -502,8 +507,14 @@ In addition to the list of state modifying statements explained above, the follo
         }
     }
 
-.. warning::
-  The compiler does not enforce yet that a ``pure`` method is not reading from the state.
+.. note::
+  If invalid explicit type conversions are used, state modifications are possible
+  even though a ``pure`` function was called.
+  You can switch the compiler to use STATICCALL when calling such functions and thus
+  prevent modifications to the state on the level of the EVM by adding
+  ``pragma experimental STATICCALL;``
+  It is not possible to prevent functions from reading the state at the level
+  of the EVM.
 
 .. index:: ! fallback function, function;fallback
 
