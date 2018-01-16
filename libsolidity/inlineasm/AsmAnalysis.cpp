@@ -49,10 +49,10 @@ bool AsmAnalyzer::analyze(Block const& _block)
 	if (!(ScopeFiller(m_info, m_errorReporter))(_block))
 		return false;
 
-	AsmPrinter p;
-	cout << "Starting analisis for ----------------------------" << endl;
-	cout << p(_block) << endl;
-	cout << " ----------------------------" << endl;
+//	AsmPrinter p;
+//	cout << "Starting analisis for ----------------------------" << endl;
+//	cout << p(_block) << endl;
+//	cout << " ----------------------------" << endl;
 
 	return (*this)(_block);
 }

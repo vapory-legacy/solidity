@@ -19,12 +19,16 @@
  */
 
 #include <test/libsolidity/SolidityExecutionFramework.h>
-#include <libevmasm/GasMeter.h>
-#include <libevmasm/KnownState.h>
-#include <libevmasm/PathGasMeter.h>
+#include <test/libsolidity/ABITestsCommon.h>
+
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/interface/GasEstimator.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
+
+#include <libevmasm/GasMeter.h>
+#include <libevmasm/KnownState.h>
+#include <libevmasm/PathGasMeter.h>
+
 
 using namespace std;
 using namespace dev::eth;
@@ -42,7 +46,7 @@ BOOST_FIXTURE_TEST_SUITE(ABICoderGasCosts, SolidityExecutionFramework)
 
 BOOST_AUTO_TEST_CASE(ERC20)
 {
-	char const* sourceCode = R"(
+	string sourceCode = R"(
 		contract ERC20Interface {
 			function totalSupply() public constant returns (uint) {}
 			function balanceOf(address tokenOwner) public constant returns (uint balance) {}
@@ -54,7 +58,13 @@ BOOST_AUTO_TEST_CASE(ERC20)
 			event Approval(address indexed tokenOwner, address indexed spender, uint tokens) {}
 		}
 	)";
-	compile(sourceCode);
+	BOTH_ENCODERS(
+		compileAndRun(sourceCode);
+		ABI_CHECK(callContractFunction(
+			"f(uint256,uint16,uint24,int24,bytes3,bool,address)",
+			1, 2, 3, 4, string("abc"), true, u160(m_contractAddress)
+		), encodeArgs(u256(20)));
+	)
 }
 
 BOOST_AUTO_TEST_SUITE_END()

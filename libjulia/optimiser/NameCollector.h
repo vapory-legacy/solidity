@@ -69,6 +69,7 @@ private:
 	std::map<std::string, size_t> m_references;
 };
 
+/**
  * Specific AST walker that finds all variables that are assigned to.
  */
 class Assignments: public ASTWalker

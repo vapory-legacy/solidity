@@ -21,6 +21,8 @@
 
 #include <test/libjulia/Common.h>
 
+#include <libjulia/optimiser/InlinableFunctionFilter.h>
+#include <libjulia/optimiser/FunctionalInliner.h>
 #include <libjulia/optimiser/FullInliner.h>
 #include <libjulia/optimiser/FunctionHoister.h>
 #include <libjulia/optimiser/FunctionGrouper.h>
@@ -58,7 +60,7 @@ string inlineFunctions(string const& _source, bool _julia = true)
 {
 	auto ast = disambiguate(_source, _julia);
 	FunctionalInliner(ast).run();
-	return assembly::AsmPrinter(_julia)(ast);
+	return solidity::assembly::AsmPrinter(_julia)(ast);
 }
 
 string fullInline(string const& _source, bool _julia = true)
