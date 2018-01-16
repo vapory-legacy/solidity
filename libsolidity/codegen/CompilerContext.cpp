@@ -33,6 +33,8 @@
 #include <libsolidity/inlineasm/AsmAnalysis.h>
 #include <libsolidity/inlineasm/AsmAnalysisInfo.h>
 
+#include <libjulia/optimiser/Suite.h>
+
 #include <boost/algorithm/string/replace.hpp>
 
 #include <utility>
@@ -350,6 +352,17 @@ void CompilerContext::appendInlineAssembly(
 
 		solAssert(false, message);
 	}
+
+	julia::OptimiserSuite suite;
+	suite.run(*parserResult, analysisInfo);
+
+	analysisInfo = assembly::AsmAnalysisInfo{};
+	analyzerResult = assembly::AsmAnalyzer(
+		analysisInfo,
+		errorReporter,
+		assembly::AsmFlavour::Strict,
+		identifierAccess.resolve
+	).analyze(*parserResult);
 
 	solAssert(errorReporter.errors().empty(), "Failed to analyze inline assembly block.");
 	assembly::CodeGenerator::assemble(*parserResult, analysisInfo, *m_asm, identifierAccess, _system);
