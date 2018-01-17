@@ -44,14 +44,14 @@ namespace julia
 class UnusedPruner: public ASTModifier
 {
 public:
-	explicit UnusedPruner(Block& _ast);
+	explicit UnusedPruner(Block& _ast, std::set<std::string> const& _externallyUsedFunctions = std::set<std::string>());
 
 	using ASTModifier::operator();
 	virtual void operator()(Block& _block) override;
 
 	bool shouldRunAgain() const { return m_shouldRunAgain; }
 
-	static void runUntilStabilised(Block& _ast);
+	static void runUntilStabilised(Block& _ast, std::set<std::string> const& _externallyUsedFunctions = std::set<std::string>());
 
 private:
 	bool used(std::string const& _name) const;

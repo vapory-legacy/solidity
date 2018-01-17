@@ -277,6 +277,7 @@ void CompilerContext::resetVisitedNodes(ASTNode const* _node)
 void CompilerContext::appendInlineAssembly(
 	string const& _assembly,
 	vector<string> const& _localVariables,
+	set<string> const& _externallyUsedFunctions,
 	bool _system
 )
 {
@@ -354,7 +355,7 @@ void CompilerContext::appendInlineAssembly(
 	}
 
 	julia::OptimiserSuite suite;
-	suite.run(*parserResult, analysisInfo);
+	suite.run(*parserResult, analysisInfo, _externallyUsedFunctions);
 
 	analysisInfo = assembly::AsmAnalysisInfo{};
 	analyzerResult = assembly::AsmAnalyzer(
