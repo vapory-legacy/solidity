@@ -45,7 +45,7 @@ namespace test
 class ABICoderGasCostsFixture: SolidityExecutionFramework
 {
 protected:
-	void analyze(string const& _sourceCode)
+	void analyze(string const& _sourceCode, string const& _funToCall = "f()")
 	{
 		string sourceCode = _sourceCode;
 		size_t run = 0;
@@ -54,7 +54,7 @@ protected:
 		BOTH_ENCODERS(
 			compileAndRun(sourceCode);
 			bytecodeSize[run] = m_output.size();
-			ABI_CHECK(callContractFunction("f()"), bytes());
+			callContractFunction(_funToCall));
 			runGas[run] = m_gasUsed;
 			run++;
 		)
