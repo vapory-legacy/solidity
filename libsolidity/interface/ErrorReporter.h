@@ -23,7 +23,7 @@
 #pragma once
 
 #include <libsolidity/interface/Exceptions.h>
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/SourceLocation.h>
 
 namespace dev
 {

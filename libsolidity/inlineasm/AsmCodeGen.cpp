@@ -28,12 +28,12 @@
 #include <libsolidity/inlineasm/AsmAnalysis.h>
 #include <libsolidity/inlineasm/AsmAnalysisInfo.h>
 
-#include <libevmasm/Assembly.h>
-#include <libevmasm/SourceLocation.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Assembly.h>
+#include <libvvmasm/SourceLocation.h>
+#include <libvvmasm/Instruction.h>
 
-#include <libjulia/backends/evm/AbstractAssembly.h>
-#include <libjulia/backends/evm/EVMCodeTransform.h>
+#include <libjulia/backends/vvm/AbstractAssembly.h>
+#include <libjulia/backends/vvm/VVMCodeTransform.h>
 
 #include <libdevcore/CommonIO.h>
 
@@ -49,10 +49,10 @@ using namespace dev;
 using namespace dev::solidity;
 using namespace dev::solidity::assembly;
 
-class EthAssemblyAdapter: public julia::AbstractAssembly
+class VapAssemblyAdapter: public julia::AbstractAssembly
 {
 public:
-	explicit EthAssemblyAdapter(eth::Assembly& _assembly):
+	explicit VapAssemblyAdapter(vap::Assembly& _assembly):
 		m_assembly(_assembly)
 	{
 	}
@@ -72,12 +72,12 @@ public:
 	/// Append a label.
 	virtual void appendLabel(LabelID _labelId) override
 	{
-		m_assembly.append(eth::AssemblyItem(eth::Tag, _labelId));
+		m_assembly.append(vap::AssemblyItem(vap::Tag, _labelId));
 	}
 	/// Append a label reference.
 	virtual void appendLabelReference(LabelID _labelId) override
 	{
-		m_assembly.append(eth::AssemblyItem(eth::PushTag, _labelId));
+		m_assembly.append(vap::AssemblyItem(vap::PushTag, _labelId));
 	}
 	virtual size_t newLabelId() override
 	{
@@ -109,20 +109,20 @@ public:
 	virtual void appendBeginsub(LabelID, int) override
 	{
 		// TODO we could emulate that, though
-		solAssert(false, "BEGINSUB not implemented for EVM 1.0");
+		solAssert(false, "BEGINSUB not implemented for VVM 1.0");
 	}
 	/// Call a subroutine.
 	virtual void appendJumpsub(LabelID, int, int) override
 	{
 		// TODO we could emulate that, though
-		solAssert(false, "JUMPSUB not implemented for EVM 1.0");
+		solAssert(false, "JUMPSUB not implemented for VVM 1.0");
 	}
 
 	/// Return from a subroutine.
 	virtual void appendReturnsub(int, int) override
 	{
 		// TODO we could emulate that, though
-		solAssert(false, "RETURNSUB not implemented for EVM 1.0");
+		solAssert(false, "RETURNSUB not implemented for VVM 1.0");
 	}
 
 	virtual void appendAssemblySize() override
@@ -131,25 +131,25 @@ public:
 	}
 
 private:
-	static LabelID assemblyTagToIdentifier(eth::AssemblyItem const& _tag)
+	static LabelID assemblyTagToIdentifier(vap::AssemblyItem const& _tag)
 	{
 		u256 id = _tag.data();
 		solAssert(id <= std::numeric_limits<LabelID>::max(), "Tag id too large.");
 		return LabelID(id);
 	}
 
-	eth::Assembly& m_assembly;
+	vap::Assembly& m_assembly;
 };
 
 void assembly::CodeGenerator::assemble(
 	Block const& _parsedData,
 	AsmAnalysisInfo& _analysisInfo,
-	eth::Assembly& _assembly,
+	vap::Assembly& _assembly,
 	julia::ExternalIdentifierAccess const& _identifierAccess,
 	bool _useNamedLabelsForFunctions
 )
 {
-	EthAssemblyAdapter assemblyAdapter(_assembly);
+	VapAssemblyAdapter assemblyAdapter(_assembly);
 	julia::CodeTransform(
 		assemblyAdapter,
 		_analysisInfo,

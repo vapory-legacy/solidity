@@ -12,18 +12,18 @@ In particular, we need help in the following areas:
 
 * Improving the documentation
 * Responding to questions from other users on `StackExchange
-  <https://ethereum.stackexchange.com>`_ and the `Solidity Gitter
-  <https://gitter.im/ethereum/solidity>`_
+  <https://vapory.stackexchange.com>`_ and the `Solidity Gitter
+  <https://gitter.im/vapory/solidity>`_
 * Fixing and responding to `Solidity's GitHub issues
-  <https://github.com/ethereum/solidity/issues>`_, especially those tagged as
-  `up-for-grabs <https://github.com/ethereum/solidity/issues?q=is%3Aopen+is%3Aissue+label%3Aup-for-grabs>`_ which are
+  <https://github.com/vaporyco/solidity/issues>`_, especially those tagged as
+  `up-for-grabs <https://github.com/vaporyco/solidity/issues?q=is%3Aopen+is%3Aissue+label%3Aup-for-grabs>`_ which are
   meant as introductory issues for external contributors.
 
 How to Report Issues
 ====================
 
 To report an issue, please use the
-`GitHub issues tracker <https://github.com/ethereum/solidity/issues>`_. When
+`GitHub issues tracker <https://github.com/vaporyco/solidity/issues>`_. When
 reporting issues, please mention the following details:
 
 * Which version of Solidity you are using
@@ -54,7 +54,7 @@ However, if you are making a larger change, please consult with the Gitter
 channel, first.
 
 Finally, please make sure you respect the `coding standards
-<https://raw.githubusercontent.com/ethereum/cpp-ethereum/develop/CodingStandards.txt>`_
+<https://raw.githubusercontent.com/vapory/cpp-vapory/develop/CodingStandards.txt>`_
 for this project. Also, even though we do CI testing, please test your code and
 ensure that it builds locally before submitting a pull request.
 
@@ -64,21 +64,21 @@ Running the compiler tests
 ==========================
 
 Solidity includes different types of tests. They are included in the application
-called ``soltest``. Some of them require the ``cpp-ethereum`` client in testing mode,
+called ``soltest``. Some of them require the ``cpp-vapory`` client in testing mode,
 some others require ``libz3`` to be installed.
 
 To disable the z3 tests, use ``./build/test/soltest -- --no-smt`` and
-to run a subset of the tests that do not require ``cpp-ethereum``, use ``./build/test/soltest -- --no-ipc``.
+to run a subset of the tests that do not require ``cpp-vapory``, use ``./build/test/soltest -- --no-ipc``.
 
-For all other tests, you need to install `cpp-ethereum <https://github.com/ethereum/cpp-ethereum/releases/download/solidityTester/eth>`_ and run it in testing mode: ``eth --test -d /tmp/testeth``.
+For all other tests, you need to install `cpp-vapory <https://github.com/vaporyco/cpp-vapory/releases/download/solidityTester/vap>`_ and run it in testing mode: ``vap --test -d /tmp/testvap``.
 
-Then you run the actual tests: ``./build/test/soltest -- --ipcpath /tmp/testeth/geth.ipc``.
+Then you run the actual tests: ``./build/test/soltest -- --ipcpath /tmp/testvap/gvap.ipc``.
 
 To run a subset of tests, filters can be used:
-``soltest -t TestSuite/TestName -- --ipcpath /tmp/testeth/geth.ipc``, where ``TestName`` can be a wildcard ``*``.
+``soltest -t TestSuite/TestName -- --ipcpath /tmp/testvap/gvap.ipc``, where ``TestName`` can be a wildcard ``*``.
 
 Alternatively, there is a testing script at ``scripts/test.sh`` which executes all tests and runs
-``cpp-ethereum`` automatically if it is in the path (but does not download it).
+``cpp-vapory`` automatically if it is in the path (but does not download it).
 
 Travis CI even runs some additional tests (including ``solc-js`` and testing third party Solidity frameworks) that require compiling the Emscripten target.
 

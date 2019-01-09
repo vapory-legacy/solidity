@@ -17,7 +17,7 @@
 
 #include <libsolidity/analysis/ViewPureChecker.h>
 
-#include <libevmasm/SemanticInformation.h>
+#include <libvvmasm/SemanticInformation.h>
 
 #include <libsolidity/inlineasm/AsmData.h>
 #include <libsolidity/ast/ExperimentalFeatures.h>
@@ -40,9 +40,9 @@ public:
 	void operator()(assembly::Label const&) { }
 	void operator()(assembly::Instruction const& _instruction)
 	{
-		if (eth::SemanticInformation::invalidInViewFunctions(_instruction.instruction))
+		if (vap::SemanticInformation::invalidInViewFunctions(_instruction.instruction))
 			m_reportMutability(StateMutability::NonPayable, _instruction.location);
-		else if (eth::SemanticInformation::invalidInPureFunctions(_instruction.instruction))
+		else if (vap::SemanticInformation::invalidInPureFunctions(_instruction.instruction))
 			m_reportMutability(StateMutability::View, _instruction.location);
 	}
 	void operator()(assembly::Literal const&) {}

@@ -858,7 +858,7 @@ private:
 class FunctionType: public Type
 {
 public:
-	/// How this function is invoked on the EVM.
+	/// How this function is invoked on the VVM.
 	enum class Kind
 	{
 		Internal, ///< stack-call using plain JUMP
@@ -1206,7 +1206,7 @@ private:
 
 /**
  * Special type that is used for dynamic types in returns from external function calls
- * (The EVM currently cannot access dynamically-sized return values).
+ * (The VVM currently cannot access dynamically-sized return values).
  */
 class InaccessibleDynamicType: public Type
 {

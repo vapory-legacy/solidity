@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Full assembly stack that can support EVM-assembly and JULIA as input and EVM, EVM1.5 and
+ * Full assembly stack that can support VVM-assembly and JULIA as input and VVM, VVM1.5 and
  * eWasm as output.
  */
 
@@ -29,10 +29,10 @@
 #include <libsolidity/inlineasm/AsmAnalysisInfo.h>
 #include <libsolidity/inlineasm/AsmCodeGen.h>
 
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
-#include <libjulia/backends/evm/EVMCodeTransform.h>
-#include <libjulia/backends/evm/EVMAssembly.h>
+#include <libjulia/backends/vvm/VVMCodeTransform.h>
+#include <libjulia/backends/vvm/VVMAssembly.h>
 
 using namespace std;
 using namespace dev;
@@ -85,21 +85,21 @@ MachineAssemblyObject AssemblyStack::assemble(Machine _machine) const
 
 	switch (_machine)
 	{
-	case Machine::EVM:
+	case Machine::VVM:
 	{
 		MachineAssemblyObject object;
-		eth::Assembly assembly;
+		vap::Assembly assembly;
 		assembly::CodeGenerator::assemble(*m_parserResult, *m_analysisInfo, assembly);
-		object.bytecode = make_shared<eth::LinkerObject>(assembly.assemble());
+		object.bytecode = make_shared<vap::LinkerObject>(assembly.assemble());
 		object.assembly = assembly.assemblyString();
 		return object;
 	}
-	case Machine::EVM15:
+	case Machine::VVM15:
 	{
 		MachineAssemblyObject object;
-		julia::EVMAssembly assembly(true);
+		julia::VVMAssembly assembly(true);
 		julia::CodeTransform(assembly, *m_analysisInfo, m_language == Language::JULIA, true)(*m_parserResult);
-		object.bytecode = make_shared<eth::LinkerObject>(assembly.finalize());
+		object.bytecode = make_shared<vap::LinkerObject>(assembly.finalize());
 		/// TOOD: fill out text representation
 		return object;
 	}

@@ -24,7 +24,7 @@
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 
 CompilerState::CompilerState()
 {
@@ -77,8 +77,8 @@ void CompilerState::populateStandard()
 	"(def 'wei 1)"
 	"(def 'szabo 1000000000000)"
 	"(def 'finney 1000000000000000)"
-	"(def 'ether 1000000000000000000)"
-	// these could be replaced by native instructions once supported by EVM
+	"(def 'vapor 1000000000000000000)"
+	// these could be replaced by native instructions once supported by VVM
 	"(def 'shl (val shift) (mul val (exp 2 shift)))"
 	"(def 'shr (val shift) (div val (exp 2 shift)))"
 	"}";

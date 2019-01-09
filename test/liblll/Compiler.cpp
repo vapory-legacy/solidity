@@ -40,7 +40,7 @@ namespace
 bool successCompile(std::string const& _sourceCode)
 {
 	std::vector<std::string> errors;
-	bytes bytecode = eth::compileLLL(_sourceCode, false, &errors);
+	bytes bytecode = vap::compileLLL(_sourceCode, false, &errors);
 	if (!errors.empty())
 		return false;
 	if (bytecode.empty())

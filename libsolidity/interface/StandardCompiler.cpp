@@ -23,7 +23,7 @@
 #include <libsolidity/interface/StandardCompiler.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
 #include <libsolidity/ast/ASTJsonConverter.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <libdevcore/JSON.h>
 #include <libdevcore/SHA3.h>
 
@@ -158,7 +158,7 @@ Json::Value formatLinkReferences(std::map<size_t, std::string> const& linkRefere
 	return ret;
 }
 
-Json::Value collectEVMObject(eth::LinkerObject const& _object, string const* _sourceMap)
+Json::Value collectVVMObject(vap::LinkerObject const& _object, string const* _sourceMap)
 {
 	Json::Value output = Json::objectValue;
 	output["object"] = _object.toHex();
@@ -416,25 +416,25 @@ Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
 		contractData["userdoc"] = m_compilerStack.natspecUser(contractName);
 		contractData["devdoc"] = m_compilerStack.natspecDev(contractName);
 
-		// EVM
-		Json::Value evmData(Json::objectValue);
+		// VVM
+		Json::Value vvmData(Json::objectValue);
 		// @TODO: add ir
-		evmData["assembly"] = m_compilerStack.assemblyString(contractName, createSourceList(_input));
-		evmData["legacyAssembly"] = m_compilerStack.assemblyJSON(contractName, createSourceList(_input));
-		evmData["methodIdentifiers"] = m_compilerStack.methodIdentifiers(contractName);
-		evmData["gasEstimates"] = m_compilerStack.gasEstimates(contractName);
+		vvmData["assembly"] = m_compilerStack.assemblyString(contractName, createSourceList(_input));
+		vvmData["legacyAssembly"] = m_compilerStack.assemblyJSON(contractName, createSourceList(_input));
+		vvmData["methodIdentifiers"] = m_compilerStack.methodIdentifiers(contractName);
+		vvmData["gasEstimates"] = m_compilerStack.gasEstimates(contractName);
 
-		evmData["bytecode"] = collectEVMObject(
+		vvmData["bytecode"] = collectVVMObject(
 			m_compilerStack.object(contractName),
 			m_compilerStack.sourceMapping(contractName)
 		);
 
-		evmData["deployedBytecode"] = collectEVMObject(
+		vvmData["deployedBytecode"] = collectVVMObject(
 			m_compilerStack.runtimeObject(contractName),
 			m_compilerStack.runtimeSourceMapping(contractName)
 		);
 
-		contractData["evm"] = evmData;
+		contractData["vvm"] = vvmData;
 
 		if (!contractsOutput.isMember(file))
 			contractsOutput[file] = Json::objectValue;

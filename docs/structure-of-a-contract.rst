@@ -82,7 +82,7 @@ Function modifiers can be used to amend the semantics of functions in a declarat
 Events
 ======
 
-Events are convenience interfaces with the EVM logging facilities.
+Events are convenience interfaces with the VVM logging facilities.
 
 ::
 

@@ -21,15 +21,15 @@
  */
 
 #include <test/libsolidity/SolidityExecutionFramework.h>
-#include <libevmasm/GasMeter.h>
-#include <libevmasm/KnownState.h>
-#include <libevmasm/PathGasMeter.h>
+#include <libvvmasm/GasMeter.h>
+#include <libvvmasm/KnownState.h>
+#include <libvvmasm/PathGasMeter.h>
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/interface/GasEstimator.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 using namespace dev::solidity;
 using namespace dev::test;
 
@@ -107,7 +107,7 @@ public:
 	}
 
 protected:
-	map<ASTNode const*, eth::GasMeter::GasConsumption> m_gasCosts;
+	map<ASTNode const*, vap::GasMeter::GasConsumption> m_gasCosts;
 };
 
 BOOST_FIXTURE_TEST_SUITE(GasMeterTests, GasMeterTestFramework)

@@ -17,7 +17,7 @@
 /**
  * @author Christian <c@ethdev.com>
  * @date 2014
- * Solidity AST to EVM bytecode compiler for expressions.
+ * Solidity AST to VVM bytecode compiler for expressions.
  */
 
 #include <utility>
@@ -31,7 +31,7 @@
 #include <libsolidity/codegen/CompilerContext.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 #include <libsolidity/codegen/LValue.h>
-#include <libevmasm/GasMeter.h>
+#include <libvvmasm/GasMeter.h>
 
 using namespace std;
 
@@ -78,7 +78,7 @@ void ExpressionCompiler::appendConstStateVariableAccessor(VariableDeclaration co
 
 	// append return
 	m_context << dupInstruction(_varDecl.annotation().type->sizeOnStack() + 1);
-	m_context.appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+	m_context.appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 }
 
 void ExpressionCompiler::appendStateVariableAccessor(VariableDeclaration const& _varDecl)
@@ -181,17 +181,17 @@ void ExpressionCompiler::appendStateVariableAccessor(VariableDeclaration const& 
 			errinfo_comment("Stack too deep.")
 		);
 	m_context << dupInstruction(retSizeOnStack + 1);
-	m_context.appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+	m_context.appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 }
 
 bool ExpressionCompiler::visit(Conditional const& _condition)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _condition);
 	_condition.condition().accept(*this);
-	eth::AssemblyItem trueTag = m_context.appendConditionalJump();
+	vap::AssemblyItem trueTag = m_context.appendConditionalJump();
 	_condition.falseExpression().accept(*this);
 	utils().convertType(*_condition.falseExpression().annotation().type, *_condition.annotation().type);
-	eth::AssemblyItem endTag = m_context.appendJumpToNew();
+	vap::AssemblyItem endTag = m_context.appendJumpToNew();
 	m_context << trueTag;
 	int offset = _condition.annotation().type->sizeOnStack();
 	m_context.adjustStackOffset(-offset);
@@ -512,7 +512,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// Calling convention: Caller pushes return address and arguments
 			// Callee removes them and pushes return values
 
-			eth::AssemblyItem returnLabel = m_context.pushNewTag();
+			vap::AssemblyItem returnLabel = m_context.pushNewTag();
 			for (unsigned i = 0; i < arguments.size(); ++i)
 			{
 				arguments[i]->accept(*this);
@@ -535,7 +535,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				// Extract the runtime part.
 				m_context << ((u256(1) << 32) - 1) << Instruction::AND;
 
-			m_context.appendJump(eth::AssemblyItem::JumpType::IntoFunction);
+			m_context.appendJump(vap::AssemblyItem::JumpType::IntoFunction);
 			m_context << returnLabel;
 
 			unsigned returnParametersSize = CompilerUtils::sizeOnStack(function.returnParameterTypes());
@@ -572,10 +572,10 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				[contract](CompilerContext& _context)
 				{
 					// copy the contract's code into memory
-					eth::Assembly const& assembly = _context.compiledContract(*contract);
+					vap::Assembly const& assembly = _context.compiledContract(*contract);
 					CompilerUtils(_context).fetchFreeMemoryPointer();
 					// pushes size
-					auto subroutine = _context.addSubroutine(make_shared<eth::Assembly>(assembly));
+					auto subroutine = _context.addSubroutine(make_shared<vap::Assembly>(assembly));
 					_context << Instruction::DUP1 << subroutine;
 					_context << Instruction::DUP4 << Instruction::CODECOPY;
 					_context << Instruction::ADD;
@@ -625,9 +625,9 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		case FunctionType::Kind::Send:
 		case FunctionType::Kind::Transfer:
 			_functionCall.expression().accept(*this);
-			// Provide the gas stipend manually at first because we may send zero ether.
-			// Will be zeroed if we send more than zero ether.
-			m_context << u256(eth::GasCosts::callStipend);
+			// Provide the gas stipend manually at first because we may send zero vapor.
+			// Will be zeroed if we send more than zero vapor.
+			m_context << u256(vap::GasCosts::callStipend);
 			arguments.front()->accept(*this);
 			utils().convertType(
 				*arguments.front()->annotation().type,
@@ -991,7 +991,7 @@ bool ExpressionCompiler::visit(NewExpression const&)
 bool ExpressionCompiler::visit(MemberAccess const& _memberAccess)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _memberAccess);
-	// Check whether the member is a bound function.
+	// Check whvaper the member is a bound function.
 	ASTString const& member = _memberAccess.memberName();
 	if (auto funType = dynamic_cast<FunctionType const*>(_memberAccess.annotation().type.get()))
 		if (funType->bound())
@@ -1452,7 +1452,7 @@ void ExpressionCompiler::appendAndOrOperatorCode(BinaryOperation const& _binaryO
 	m_context << Instruction::DUP1;
 	if (c_op == Token::And)
 		m_context << Instruction::ISZERO;
-	eth::AssemblyItem endLabel = m_context.appendConditionalJump();
+	vap::AssemblyItem endLabel = m_context.appendConditionalJump();
 	m_context << Instruction::POP;
 	_binaryOperation.rightExpression().accept(*this);
 	m_context << endLabel;
@@ -1795,17 +1795,17 @@ void ExpressionCompiler::appendExternalFunctionCall(
 	if (_functionType.gasSet())
 		m_context << dupInstruction(m_context.baseToCurrentStackOffset(gasStackPos));
 	else if (m_context.experimentalFeatureActive(ExperimentalFeature::V050))
-		// Send all gas (requires tangerine whistle EVM)
+		// Send all gas (requires tangerine whistle VVM)
 		m_context << Instruction::GAS;
 	else
 	{
 		// send all gas except the amount needed to execute "SUB" and "CALL"
 		// @todo this retains too much gas for now, needs to be fine-tuned.
-		u256 gasNeededByCaller = eth::GasCosts::callGas + 10;
+		u256 gasNeededByCaller = vap::GasCosts::callGas + 10;
 		if (_functionType.valueSet())
-			gasNeededByCaller += eth::GasCosts::callValueTransferGas;
+			gasNeededByCaller += vap::GasCosts::callValueTransferGas;
 		if (!existenceChecked)
-			gasNeededByCaller += eth::GasCosts::callNewAccountGas; // we never know
+			gasNeededByCaller += vap::GasCosts::callNewAccountGas; // we never know
 		m_context << gasNeededByCaller << Instruction::GAS << Instruction::SUB;
 	}
 	if (isDelegateCall)

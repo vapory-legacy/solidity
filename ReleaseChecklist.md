@@ -10,7 +10,7 @@ Checklist for making a release:
  - [ ] Wait for the CI runs on the tag itself (they should push artefacts onto the Github release page).
  - [ ] Run ``scripts/release_ppa.sh release`` to create the PPA release (you need the relevant openssl key).
  - [ ] Check that the Docker release was pushed to Docker Hub (this still seems to have problems).
- - [ ] Update the homebrew realease in https://github.com/ethereum/homebrew-ethereum/blob/master/solidity.rb (version and hash)
+ - [ ] Update the homebrew realease in https://github.com/vaporyco/homebrew-vapory/blob/master/solidity.rb (version and hash)
  - [ ] Make a release of ``solc-js``: Increment the version number, create a pull request for that, merge it after tests succeeded.
  - [ ] Run ``npm publish`` in the updated ``solc-js`` repository.
  - [ ] Create a commit to increase the version number on ``develop`` in ``CMakeLists.txt`` and add a new skeleton changelog entry.

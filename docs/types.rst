@@ -54,7 +54,7 @@ Operators:
 * Bit operators: ``&``, ``|``, ``^`` (bitwise exclusive or), ``~`` (bitwise negation)
 * Arithmetic operators: ``+``, ``-``, unary ``-``, unary ``+``, ``*``, ``/``, ``%`` (remainder), ``**`` (exponentiation), ``<<`` (left shift), ``>>`` (right shift)
 
-Division always truncates (it is just compiled to the ``DIV`` opcode of the EVM), but it does not truncate if both
+Division always truncates (it is just compiled to the ``DIV`` opcode of the VVM), but it does not truncate if both
 operators are :ref:`literals<rational_literals>` (or literal expressions).
 
 Division by zero and modulus with zero throws a runtime exception.
@@ -101,7 +101,7 @@ Operators:
 Address
 -------
 
-``address``: Holds a 20 byte value (size of an Ethereum address). Address types also have members and serve as a base for all contracts.
+``address``: Holds a 20 byte value (size of an Vapory address). Address types also have members and serve as a base for all contracts.
 
 Operators:
 
@@ -120,7 +120,7 @@ Members of Addresses
 For a quick reference, see :ref:`address_related`.
 
 It is possible to query the balance of an address using the property ``balance``
-and to send Ether (in units of wei) to an address using the ``transfer`` function:
+and to send Vapor (in units of wei) to an address using the ``transfer`` function:
 
 ::
 
@@ -129,7 +129,7 @@ and to send Ether (in units of wei) to an address using the ``transfer`` functio
     if (x.balance < 10 && myAddress.balance >= 10) x.transfer(10);
 
 .. note::
-    If ``x`` is a contract address, its code (more specifically: its fallback function, if present) will be executed together with the ``transfer`` call (this is a limitation of the EVM and cannot be prevented). If that execution runs out of gas or fails in any way, the Ether transfer will be reverted and the current contract will stop with an exception.
+    If ``x`` is a contract address, its code (more specifically: its fallback function, if present) will be executed together with the ``transfer`` call (this is a limitation of the VVM and cannot be prevented). If that execution runs out of gas or fails in any way, the Vapor transfer will be reverted and the current contract will stop with an exception.
 
 * ``send``
 
@@ -138,7 +138,7 @@ Send is the low-level counterpart of ``transfer``. If the execution fails, the c
 .. warning::
     There are some dangers in using ``send``: The transfer fails if the call stack depth is at 1024
     (this can always be forced by the caller) and it also fails if the recipient runs out of gas. So in order
-    to make safe Ether transfers, always check the return value of ``send``, use ``transfer`` or even better:
+    to make safe Vapor transfers, always check the return value of ``send``, use ``transfer`` or even better:
     use a pattern where the recipient withdraws the money.
 
 * ``call``, ``callcode`` and ``delegatecall``
@@ -152,19 +152,19 @@ the function ``call`` is provided which takes an arbitrary number of arguments o
     nameReg.call("register", "MyName");
     nameReg.call(bytes4(keccak256("fun(uint256)")), a);
 
-``call`` returns a boolean indicating whether the invoked function terminated (``true``) or caused an EVM exception (``false``). It is not possible to access the actual data returned (for this we would need to know the encoding and size in advance).
+``call`` returns a boolean indicating whether the invoked function terminated (``true``) or caused an VVM exception (``false``). It is not possible to access the actual data returned (for this we would need to know the encoding and size in advance).
 
 It is possible to adjust the supplied gas with the ``.gas()`` modifier::
 
     namReg.call.gas(1000000)("register", "MyName");
 
-Similarly, the supplied Ether value can be controlled too::
+Similarly, the supplied Vapor value can be controlled too::
 
-    nameReg.call.value(1 ether)("register", "MyName");
+    nameReg.call.value(1 vapor)("register", "MyName");
 
 Lastly, these modifiers can be combined. Their order does not matter::
 
-    nameReg.call.gas(1000000).value(1 ether)("register", "MyName");
+    nameReg.call.gas(1000000).value(1 vapor)("register", "MyName");
 
 .. note::
     It is not yet possible to use the gas or value modifiers on overloaded functions.
@@ -244,7 +244,7 @@ long and do not pass the checksum test produce
 a warning and are treated as regular rational number literals.
 
 .. note::
-    The mixed-case address checksum format is defined in `EIP-55 <https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md>`_.
+    The mixed-case address checksum format is defined in `EIP-55 <https://github.com/vaporyco/EIPs/blob/master/EIPS/eip-55.md>`_.
 
 .. index:: literal, literal;rational
 
@@ -693,7 +693,7 @@ Members
     It is not yet possible to use arrays of arrays in external functions.
 
 .. warning::
-    Due to limitations of the EVM, it is not possible to return
+    Due to limitations of the VVM, it is not possible to return
     dynamic content from external function calls. The function ``f`` in
     ``contract C { function f() returns (uint[]) { ... } }`` will return
     something if called from web3.js, but not if called from Solidity.
@@ -888,7 +888,7 @@ for each ``_KeyType``, recursively.
 
 .. note::
   Mappings are not iterable, but it is possible to implement a data structure on top of them.
-  For an example, see `iterable mapping <https://github.com/ethereum/dapp-bin/blob/master/library/iterable_mapping.sol>`_.
+  For an example, see `iterable mapping <https://github.com/vaporyco/dapp-bin/blob/master/library/iterable_mapping.sol>`_.
 
 .. index:: assignment, ! delete, lvalue
 

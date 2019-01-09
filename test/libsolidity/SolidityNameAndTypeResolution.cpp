@@ -1195,7 +1195,7 @@ BOOST_AUTO_TEST_CASE(missing_state_variable)
 
 BOOST_AUTO_TEST_CASE(base_class_state_variable_accessor)
 {
-	// test for issue #1126 https://github.com/ethereum/cpp-ethereum/issues/1126
+	// test for issue #1126 https://github.com/vaporyco/cpp-vapory/issues/1126
 	char const* text = R"(
 		contract Parent {
 			uint256 public m_aMember;
@@ -1708,7 +1708,7 @@ BOOST_AUTO_TEST_CASE(disallow_declaration_of_void_type)
 	CHECK_ERROR(sourceCode, TypeError, "Not enough components (0) in value to assign all variables (1).");
 }
 
-BOOST_AUTO_TEST_CASE(overflow_caused_by_ether_units)
+BOOST_AUTO_TEST_CASE(overflow_caused_by_vapor_units)
 {
 	char const* sourceCodeFine = R"(
 		contract c {
@@ -1722,7 +1722,7 @@ BOOST_AUTO_TEST_CASE(overflow_caused_by_ether_units)
 	char const* sourceCode = R"(
 		contract c {
 			function c () public {
-				 a = 115792089237316195423570985008687907853269984665640564039458 ether;
+				 a = 115792089237316195423570985008687907853269984665640564039458 vapor;
 			}
 			uint256 a;
 		}
@@ -4867,7 +4867,7 @@ BOOST_AUTO_TEST_CASE(illegal_override_payable_nonpayable)
 
 BOOST_AUTO_TEST_CASE(function_variable_mixin)
 {
-       // bug #1798 (cpp-ethereum), related to #1286 (solidity)
+       // bug #1798 (cpp-vapory), related to #1286 (solidity)
        char const* text = R"(
                contract attribute {
                        bool ok = false;

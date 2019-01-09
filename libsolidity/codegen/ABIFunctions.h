@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * @author Christian <chris@ethereum.org>
+ * @author Christian <chris@vapory.org>
  * @date 2017
  * Routines that generate JULIA code related to ABI encoding, decoding and type conversions.
  */

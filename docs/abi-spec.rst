@@ -9,13 +9,13 @@ Application Binary Interface Specification
 Basic Design
 ============
 
-The Application Binary Interface is the standard way to interact with contracts in the Ethereum ecosystem, both
+The Application Binary Interface is the standard way to interact with contracts in the Vapory ecosystem, both
 from outside the blockchain and for contract-to-contract interaction. Data is encoded according to its type,
 as described in this specification.  The encoding is not self describing and thus requires a schema in order to decode.
 
 We assume the interface functions of a contract are strongly typed, known at compilation time and static. No introspection mechanism will be provided. We assume that all contracts will have the interface definitions of any contracts they call available at compile-time.
 
-This specification does not address contracts whose interface is dynamic or otherwise known only at run-time. Should these cases become important they can be adequately handled as facilities built within the Ethereum ecosystem.
+This specification does not address contracts whose interface is dynamic or otherwise known only at run-time. Should these cases become important they can be adequately handled as facilities built within the Vapory ecosystem.
 
 .. _abi_function_selector:
 
@@ -277,13 +277,13 @@ All together, the encoding is (newline after function selector and each 32-bytes
 Events
 ======
 
-Events are an abstraction of the Ethereum logging/event-watching protocol. Log entries provide the contract's address, a series of up to four topics and some arbitrary length binary data. Events leverage the existing function ABI in order to interpret this (together with an interface spec) as a properly typed structure.
+Events are an abstraction of the Vapory logging/event-watching protocol. Log entries provide the contract's address, a series of up to four topics and some arbitrary length binary data. Events leverage the existing function ABI in order to interpret this (together with an interface spec) as a properly typed structure.
 
 Given an event name and series of event parameters, we split them into two sub-series: those which are indexed and those which are not. Those which are indexed, which may number up to 3, are used alongside the Keccak hash of the event signature to form the topics of the log entry. Those which are not indexed form the byte array of the event.
 
 In effect, a log entry using this ABI is described as:
 
-- ``address``: the address of the contract (intrinsically provided by Ethereum);
+- ``address``: the address of the contract (intrinsically provided by Vapory);
 - ``topics[0]``: ``keccak(EVENT_NAME+"("+EVENT_ARGS.map(canonical_type_of).join(",")+")")`` (``canonical_type_of`` is a function that simply returns the canonical type of a given argument, e.g. for ``uint indexed foo``, it would return ``uint256``). If the event is declared as ``anonymous`` the ``topics[0]`` is not generated;
 - ``topics[n]``: ``EVENT_INDEXED_ARGS[n - 1]`` (``EVENT_INDEXED_ARGS`` is the series of ``EVENT_ARGS`` that are indexed);
 - ``data``: ``abi_serialise(EVENT_NON_INDEXED_ARGS)`` (``EVENT_NON_INDEXED_ARGS`` is the series of ``EVENT_ARGS`` that are not indexed, ``abi_serialise`` is the ABI serialisation function used for returning a series of typed values from a function, as described above).
@@ -303,7 +303,7 @@ A function description is a JSON object with the fields:
   * ``components``: used for tuple types (more below).
 
 - ``outputs``: an array of objects similar to ``inputs``, can be omitted if function doesn't return anything;
-- ``payable``: ``true`` if function accepts ether, defaults to ``false``;
+- ``payable``: ``true`` if function accepts vapor, defaults to ``false``;
 - ``stateMutability``: a string with one of the following values: ``pure`` (:ref:`specified to not read blockchain state <pure-functions>`), ``view`` (:ref:`specified to not modify the blockchain state <view-functions>`), ``nonpayable`` and ``payable`` (same as ``payable`` above).
 - ``constant``: ``true`` if function is either ``pure`` or ``view``
 
@@ -311,7 +311,7 @@ A function description is a JSON object with the fields:
 
 Constructor and fallback function never have ``name`` or ``outputs``. Fallback function doesn't have ``inputs`` either.
 
-Sending non-zero ether to non-payable function will throw. Don't do it.
+Sending non-zero vapor to non-payable function will throw. Don't do it.
 
 An event description is a JSON object with fairly similar fields:
 

@@ -17,8 +17,8 @@ Statically-sized variables (everything except mapping and dynamically-sized arra
 
 .. warning::
     When using elements that are smaller than 32 bytes, your contract's gas usage may be higher.
-    This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller
-    than that, the EVM must use more operations in order to reduce the size of the element from 32
+    This is because the VVM operates on 32 bytes at a time. Therefore, if the element is smaller
+    than that, the VVM must use more operations in order to reduce the size of the element from 32
     bytes to the desired size.
 
     It is only beneficial to use reduced-size arguments if you are dealing with storage values
@@ -26,7 +26,7 @@ Statically-sized variables (everything except mapping and dynamically-sized arra
     multiple reads or writes into a single operation. When dealing with function arguments or memory
     values, there is no inherent benefit because the compiler does not pack these values.
 
-    Finally, in order to allow the EVM to optimize for this, ensure that you try to order your
+    Finally, in order to allow the VVM to optimize for this, ensure that you try to order your
     storage variables and ``struct`` members such that they can be packed tightly. For example,
     declaring your storage variables in the order of ``uint128, uint128, uint256`` instead of
     ``uint128, uint256, uint128``, as the former will only take up two slots of storage whereas the
@@ -322,7 +322,7 @@ Global Variables
 - ``assert(bool condition)``: abort execution and revert state changes if condition is ``false`` (use for internal error)
 - ``require(bool condition)``: abort execution and revert state changes if condition is ``false`` (use for malformed input or error in external component)
 - ``revert()``: abort execution and revert state changes
-- ``keccak256(...) returns (bytes32)``: compute the Ethereum-SHA-3 (Keccak-256) hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
+- ``keccak256(...) returns (bytes32)``: compute the Vapory-SHA-3 (Keccak-256) hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 - ``sha3(...) returns (bytes32)``: an alias to ``keccak256``
 - ``sha256(...) returns (bytes32)``: compute the SHA-256 hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 - ``ripemd160(...) returns (bytes20)``: compute the RIPEMD-160 hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
@@ -361,7 +361,7 @@ Modifiers
 
 - ``pure`` for functions: Disallows modification or access of state - this is not enforced yet.
 - ``view`` for functions: Disallows modification of state - this is not enforced yet.
-- ``payable`` for functions: Allows them to receive Ether together with a call.
+- ``payable`` for functions: Allows them to receive Vapor together with a call.
 - ``constant`` for state variables: Disallows assignment (except initialisation), does not occupy storage slot.
 - ``constant`` for functions: Same as ``view``.
 - ``anonymous`` for events: Does not store event signature as topic.

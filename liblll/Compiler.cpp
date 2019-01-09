@@ -26,10 +26,10 @@
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 
 
-bytes dev::eth::compileLLL(string const& _src, bool _opt, vector<string>* _errors, ReadCallback const& _readFile)
+bytes dev::vap::compileLLL(string const& _src, bool _opt, vector<string>* _errors, ReadCallback const& _readFile)
 {
 	try
 	{
@@ -67,7 +67,7 @@ bytes dev::eth::compileLLL(string const& _src, bool _opt, vector<string>* _error
 	return bytes();
 }
 
-std::string dev::eth::compileLLLToAsm(std::string const& _src, bool _opt, std::vector<std::string>* _errors, ReadCallback const& _readFile)
+std::string dev::vap::compileLLLToAsm(std::string const& _src, bool _opt, std::vector<std::string>* _errors, ReadCallback const& _readFile)
 {
 	try
 	{
@@ -104,7 +104,7 @@ std::string dev::eth::compileLLLToAsm(std::string const& _src, bool _opt, std::v
 	return string();
 }
 
-string dev::eth::parseLLL(string const& _src)
+string dev::vap::parseLLL(string const& _src)
 {
 	sp::utree o;
 

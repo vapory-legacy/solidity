@@ -21,7 +21,7 @@
  */
 
 #include <libsolidity/codegen/Compiler.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 #include <libsolidity/codegen/ContractCompiler.h>
 
 using namespace std;
@@ -30,7 +30,7 @@ using namespace dev::solidity;
 
 void Compiler::compileContract(
 	ContractDefinition const& _contract,
-	std::map<const ContractDefinition*, eth::Assembly const*> const& _contracts,
+	std::map<const ContractDefinition*, vap::Assembly const*> const& _contracts,
 	bytes const& _metadata
 )
 {
@@ -48,7 +48,7 @@ void Compiler::compileContract(
 
 void Compiler::compileClone(
 	ContractDefinition const& _contract,
-	map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+	map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 )
 {
 	ContractCompiler runtimeCompiler(nullptr, m_runtimeContext, m_optimize);
@@ -58,7 +58,7 @@ void Compiler::compileClone(
 	m_context.optimise(m_optimize, m_optimizeRuns);
 }
 
-eth::AssemblyItem Compiler::functionEntryLabel(FunctionDefinition const& _function) const
+vap::AssemblyItem Compiler::functionEntryLabel(FunctionDefinition const& _function) const
 {
 	return m_runtimeContext.functionEntryLabelIfExists(_function);
 }

@@ -261,7 +261,7 @@ void SMTChecker::endVisit(FunctionCall const& _funCall)
 		m_interface->addAssertion(expr(*args[0]));
 		checkCondition(!(expr(*args[0])), _funCall.location(), "Unreachable code");
 		// TODO is there something meaningful we can check here?
-		// We can check whether the condition is always fulfilled or never fulfilled.
+		// We can check whvapor the condition is always fulfilled or never fulfilled.
 	}
 }
 

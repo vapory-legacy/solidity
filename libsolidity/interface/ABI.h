@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Utilities to handle the Contract ABI (https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI)
+ * Utilities to handle the Contract ABI (https://github.com/vaporyco/wiki/wiki/Vapory-Contract-ABI)
  */
 
 #pragma once

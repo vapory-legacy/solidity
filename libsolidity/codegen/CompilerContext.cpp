@@ -74,17 +74,17 @@ void CompilerContext::callLowLevelFunction(
 	function<void(CompilerContext&)> const& _generator
 )
 {
-	eth::AssemblyItem retTag = pushNewTag();
+	vap::AssemblyItem retTag = pushNewTag();
 	CompilerUtils(*this).moveIntoStack(_inArgs);
 
 	*this << lowLevelFunctionTag(_name, _inArgs, _outArgs, _generator);
 
-	appendJump(eth::AssemblyItem::JumpType::IntoFunction);
+	appendJump(vap::AssemblyItem::JumpType::IntoFunction);
 	adjustStackOffset(int(_outArgs) - 1 - _inArgs);
 	*this << retTag.tag();
 }
 
-eth::AssemblyItem CompilerContext::lowLevelFunctionTag(
+vap::AssemblyItem CompilerContext::lowLevelFunctionTag(
 	string const& _name,
 	unsigned _inArgs,
 	unsigned _outArgs,
@@ -94,7 +94,7 @@ eth::AssemblyItem CompilerContext::lowLevelFunctionTag(
 	auto it = m_lowLevelFunctions.find(_name);
 	if (it == m_lowLevelFunctions.end())
 	{
-		eth::AssemblyItem tag = newTag().pushTag();
+		vap::AssemblyItem tag = newTag().pushTag();
 		m_lowLevelFunctions.insert(make_pair(_name, tag));
 		m_lowLevelFunctionGenerationQueue.push(make_tuple(_name, _inArgs, _outArgs, _generator));
 		return tag;
@@ -118,7 +118,7 @@ void CompilerContext::appendMissingLowLevelFunctions()
 		*this << m_lowLevelFunctions.at(name).tag();
 		generator(*this);
 		CompilerUtils(*this).moveToStackTop(outArgs);
-		appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+		appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 		solAssert(stackHeight() == outArgs, "Invalid stack height in low-level function " + name + ".");
 	}
 }
@@ -138,7 +138,7 @@ void CompilerContext::removeVariable(VariableDeclaration const& _declaration)
 		m_localVariables.erase(&_declaration);
 }
 
-eth::Assembly const& CompilerContext::compiledContract(const ContractDefinition& _contract) const
+vap::Assembly const& CompilerContext::compiledContract(const ContractDefinition& _contract) const
 {
 	auto ret = m_compiledContracts.find(&_contract);
 	solAssert(ret != m_compiledContracts.end(), "Compiled contract not found.");
@@ -150,12 +150,12 @@ bool CompilerContext::isLocalVariable(Declaration const* _declaration) const
 	return !!m_localVariables.count(_declaration);
 }
 
-eth::AssemblyItem CompilerContext::functionEntryLabel(Declaration const& _declaration)
+vap::AssemblyItem CompilerContext::functionEntryLabel(Declaration const& _declaration)
 {
 	return m_functionCompilationQueue.entryLabel(_declaration, *this);
 }
 
-eth::AssemblyItem CompilerContext::functionEntryLabelIfExists(Declaration const& _declaration) const
+vap::AssemblyItem CompilerContext::functionEntryLabelIfExists(Declaration const& _declaration) const
 {
 	return m_functionCompilationQueue.entryLabelIfExists(_declaration);
 }
@@ -228,9 +228,9 @@ pair<u256, unsigned> CompilerContext::storageLocationOfVariable(const Declaratio
 	return it->second;
 }
 
-CompilerContext& CompilerContext::appendJump(eth::AssemblyItem::JumpType _jumpType)
+CompilerContext& CompilerContext::appendJump(vap::AssemblyItem::JumpType _jumpType)
 {
-	eth::AssemblyItem item(Instruction::JUMP);
+	vap::AssemblyItem item(Instruction::JUMP);
 	item.setJumpType(_jumpType);
 	return *this << item;
 }
@@ -243,7 +243,7 @@ CompilerContext& CompilerContext::appendInvalid()
 CompilerContext& CompilerContext::appendConditionalInvalid()
 {
 	*this << Instruction::ISZERO;
-	eth::AssemblyItem afterTag = appendConditionalJump();
+	vap::AssemblyItem afterTag = appendConditionalJump();
 	*this << Instruction::INVALID;
 	*this << afterTag;
 	return *this;
@@ -257,7 +257,7 @@ CompilerContext& CompilerContext::appendRevert()
 CompilerContext& CompilerContext::appendConditionalRevert()
 {
 	*this << Instruction::ISZERO;
-	eth::AssemblyItem afterTag = appendConditionalJump();
+	vap::AssemblyItem afterTag = appendConditionalJump();
 	appendRevert();
 	*this << afterTag;
 	return *this;
@@ -382,7 +382,7 @@ void CompilerContext::updateSourceLocation()
 	m_asm->setSourceLocation(m_visitedNodes.empty() ? SourceLocation() : m_visitedNodes.top()->location());
 }
 
-eth::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabel(
+vap::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabel(
 	Declaration const& _declaration,
 	CompilerContext& _context
 )
@@ -390,7 +390,7 @@ eth::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabel(
 	auto res = m_entryLabels.find(&_declaration);
 	if (res == m_entryLabels.end())
 	{
-		eth::AssemblyItem tag(_context.newTag());
+		vap::AssemblyItem tag(_context.newTag());
 		m_entryLabels.insert(make_pair(&_declaration, tag));
 		m_functionsToCompile.push(&_declaration);
 		return tag.tag();
@@ -400,10 +400,10 @@ eth::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabel(
 
 }
 
-eth::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabelIfExists(Declaration const& _declaration) const
+vap::AssemblyItem CompilerContext::FunctionCompilationQueue::entryLabelIfExists(Declaration const& _declaration) const
 {
 	auto res = m_entryLabels.find(&_declaration);
-	return res == m_entryLabels.end() ? eth::AssemblyItem(eth::UndefinedItem) : res->second.tag();
+	return res == m_entryLabels.end() ? vap::AssemblyItem(vap::UndefinedItem) : res->second.tag();
 }
 
 Declaration const* CompilerContext::FunctionCompilationQueue::nextFunctionToCompile() const

@@ -17,7 +17,7 @@
 /** @file main.cpp
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
- * Ethereum client.
+ * Vapory client.
  */
 
 #include <fstream>
@@ -26,16 +26,16 @@
 #include <liblll/Compiler.h>
 #include <libdevcore/CommonIO.h>
 #include <libdevcore/CommonData.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <solidity/BuildInfo.h>
 
 using namespace std;
 using namespace dev;
 using namespace dev::solidity;
-using namespace dev::eth;
+using namespace dev::vap;
 
 static string const VersionString =
-        string(ETH_PROJECT_VERSION) +
+        string(VAP_PROJECT_VERSION) +
         (string(SOL_VERSION_PRERELEASE).empty() ? "" : "-" + string(SOL_VERSION_PRERELEASE)) +
         (string(SOL_VERSION_BUILDINFO).empty() ? "" : "+" + string(SOL_VERSION_BUILDINFO));
 

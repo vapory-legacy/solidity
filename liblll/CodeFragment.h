@@ -22,8 +22,8 @@
 #pragma once
 
 #include <libdevcore/Common.h>
-#include <libevmasm/Instruction.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Instruction.h>
+#include <libvvmasm/Assembly.h>
 #include "Exceptions.h"
 
 namespace boost { namespace spirit { class utree; } }
@@ -31,7 +31,7 @@ namespace sp = boost::spirit;
 
 namespace dev
 {
-namespace eth
+namespace vap
 {
 
 struct CompilerState;

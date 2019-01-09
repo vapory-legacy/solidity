@@ -13,7 +13,7 @@ Example contracts
 =================
 
 There are some `contract examples <https://github.com/fivedogit/solidity-baby-steps/tree/master/contracts/>`_ by fivedogit and
-there should be a `test contract <https://github.com/ethereum/solidity/blob/develop/test/libsolidity/SolidityEndToEndTest.cpp>`_ for every single feature of Solidity.
+there should be a `test contract <https://github.com/vaporyco/solidity/blob/develop/test/libsolidity/SolidityEndToEndTest.cpp>`_ for every single feature of Solidity.
 
 Create and publish the most basic contract possible
 ===================================================
@@ -29,7 +29,7 @@ to the submitter of the transaction. This applies to function calls/transactions
 creation transactions.
 
 If you want to schedule future calls of your contract, you can use the
-`alarm clock <http://www.ethereum-alarm-clock.com/>`_.
+`alarm clock <http://www.vapory-alarm-clock.com/>`_.
 
 What is the transaction "payload"?
 ==================================
@@ -55,11 +55,11 @@ Create a contract that can be killed and return funds
 
 First, a word of warning: Killing contracts sounds like a good idea, because "cleaning up"
 is always good, but as seen above, it does not really clean up. Furthermore,
-if Ether is sent to removed contracts, the Ether will be forever lost.
+if Vapor is sent to removed contracts, the Vapor will be forever lost.
 
 If you want to deactivate your contracts, it is preferable to **disable** them by changing some
 internal state which causes all functions to throw. This will make it impossible
-to use the contract and ether sent to the contract will be returned automatically.
+to use the contract and vapor sent to the contract will be returned automatically.
 
 Now to answering the question: Inside a constructor, ``msg.sender`` is the
 creator. Save it. Then ``selfdestruct(creator);`` to kill and return funds.
@@ -68,15 +68,15 @@ creator. Save it. Then ``selfdestruct(creator);`` to kill and return funds.
 
 Note that if you ``import "mortal"`` at the top of your contracts and declare
 ``contract SomeContract is mortal { ...`` and compile with a compiler that already
-has it (which includes `Remix <https://remix.ethereum.org/>`_), then
+has it (which includes `Remix <https://remix.vapory.org/>`_), then
 ``kill()`` is taken care of for you. Once a contract is "mortal", then you can
-``contractname.kill.sendTransaction({from:eth.coinbase})``, just the same as my
+``contractname.kill.sendTransaction({from:vap.coinbase})``, just the same as my
 examples.
 
-Store Ether in a contract
+Store Vapor in a contract
 =========================
 
-The trick is to create the contract with ``{from:someaddress, value: web3.toWei(3,"ether")...}``
+The trick is to create the contract with ``{from:someaddress, value: web3.toWei(3,"vapor")...}``
 
 See `endowment_retriever.sol <https://github.com/fivedogit/solidity-baby-steps/blob/master/contracts/30_endowment_retriever.sol>`_.
 
@@ -99,7 +99,7 @@ Yes. See `array_receiver_and_returner.sol <https://github.com/fivedogit/solidity
 
 What is problematic, though, is returning any variably-sized data (e.g. a
 variably-sized array like ``uint[]``) from a fuction **called from within Solidity**.
-This is a limitation of the EVM and will be solved with the next protocol update.
+This is a limitation of the VVM and will be solved with the next protocol update.
 
 Returning variably-sized data as part of an external transaction or call is fine.
 
@@ -179,7 +179,7 @@ See `struct_and_for_loop_tester.sol <https://github.com/fivedogit/solidity-baby-
 What are some examples of basic string manipulation (``substring``, ``indexOf``, ``charAt``, etc)?
 ==================================================================================================
 
-There are some string utility functions at `stringUtils.sol <https://github.com/ethereum/dapp-bin/blob/master/library/stringUtils.sol>`_
+There are some string utility functions at `stringUtils.sol <https://github.com/vaporyco/dapp-bin/blob/master/library/stringUtils.sol>`_
 which will be extended in the future. In addition, Arachnid has written `solidity-stringutils <https://github.com/Arachnid/solidity-stringutils>`_.
 
 For now, if you want to modify a string (even when you only want to know its length),
@@ -262,11 +262,11 @@ Are comments included with deployed contracts and do they increase deployment ga
 No, everything that is not needed for execution is removed during compilation.
 This includes, among others, comments, variable names and type names.
 
-What happens if you send ether along with a function call to a contract?
+What happens if you send vapor along with a function call to a contract?
 ========================================================================
 
-It gets added to the total balance of the contract, just like when you send ether when creating a contract.
-You can only send ether along to a function that has the ``payable`` modifier,
+It gets added to the total balance of the contract, just like when you send vapor when creating a contract.
+You can only send vapor along to a function that has the ``payable`` modifier,
 otherwise an exception is thrown.
 
 Is it possible to get a tx receipt for a transaction executed contract-to-contract?
@@ -274,12 +274,12 @@ Is it possible to get a tx receipt for a transaction executed contract-to-contra
 
 No, a function call from one contract to another does not create its own transaction,
 you have to look in the overall transaction. This is also the reason why several
-block explorer do not show Ether sent between contracts correctly.
+block explorer do not show Vapor sent between contracts correctly.
 
 What is the ``memory`` keyword? What does it do?
 ================================================
 
-The Ethereum Virtual Machine has three areas where it can store items.
+The Vapory Virtual Machine has three areas where it can store items.
 
 The first is "storage", where all the contract state variables reside.
 Every contract has its own storage and it is persistent between function calls
@@ -569,7 +569,7 @@ individual elements. If you want to return the complete array, you have to
 manually write a function to do that.
 
 
-What could have happened if an account has storage value(s) but no code?  Example: http://test.ether.camp/account/5f740b3a43fbb99724ce93a879805f4dc89178b5
+What could have happened if an account has storage value(s) but no code?  Example: http://test.vapor.camp/account/5f740b3a43fbb99724ce93a879805f4dc89178b5
 ==========================================================================================================================================================
 
 The last thing a constructor does is returning the code of the contract.
@@ -578,7 +578,7 @@ that the supplied gas is not enough. This situation is the only one
 where an "out of gas" exception does not revert changes to the state,
 i.e. in this case the initialisation of the state variables.
 
-https://github.com/ethereum/wiki/wiki/Subtleties
+https://github.com/vaporyco/wiki/wiki/Subtleties
 
 After a successful CREATE operation's sub-execution, if the operation returns x, 5 * len(x) gas is subtracted from the remaining gas before the contract is created. If the remaining gas is less than 5 * len(x), then no gas is subtracted, the code of the created contract becomes the empty string, but this is not treated as an exceptional condition - no reverts happen.
 
@@ -601,4 +601,4 @@ More Questions?
 ===============
 
 If you have more questions or your question is not answered here, please talk to us on
-`gitter <https://gitter.im/ethereum/solidity>`_ or file an `issue <https://github.com/ethereum/solidity/issues>`_.
+`gitter <https://gitter.im/vapory/solidity>`_ or file an `issue <https://github.com/vaporyco/solidity/issues>`_.

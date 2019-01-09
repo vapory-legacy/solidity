@@ -29,8 +29,8 @@
 #include <libsolidity/ast/ASTAnnotations.h>
 #include <libsolidity/ast/ASTEnums.h>
 
-#include <libevmasm/SourceLocation.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/SourceLocation.h>
+#include <libvvmasm/Instruction.h>
 
 #include <libdevcore/FixedHash.h>
 #include <json/json.h>
@@ -1582,7 +1582,7 @@ public:
 		Wei = Token::SubWei,
 		Szabo = Token::SubSzabo,
 		Finney = Token::SubFinney,
-		Ether = Token::SubEther,
+		Vapor = Token::SubVapor,
 		Second = Token::SubSecond,
 		Minute = Token::SubMinute,
 		Hour = Token::SubHour,

@@ -18,7 +18,7 @@
  * @author Lefteris <lefteris@ethdev.com>
  * @date 2014
  * Takes the parsed AST and produces the Natspec documentation:
- * https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format
+ * https://github.com/vaporyco/wiki/wiki/Vapory-Natural-Specification-Format
  *
  * Can generally deal with JSON files
  */

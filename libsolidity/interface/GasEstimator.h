@@ -25,8 +25,8 @@
 #include <vector>
 #include <map>
 #include <array>
-#include <libevmasm/GasMeter.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/GasMeter.h>
+#include <libvvmasm/Assembly.h>
 
 namespace dev
 {
@@ -39,7 +39,7 @@ class FunctionDefinition;
 struct GasEstimator
 {
 public:
-	using GasConsumption = eth::GasMeter::GasConsumption;
+	using GasConsumption = vap::GasMeter::GasConsumption;
 	using ASTGasConsumption = std::map<ASTNode const*, GasConsumption>;
 	using ASTGasConsumptionSelfAccumulated =
 		std::map<ASTNode const*, std::array<GasConsumption, 2>>;
@@ -48,7 +48,7 @@ public:
 	/// it by source location.
 	/// @returns a mapping from each AST node to a pair of its particular and syntactically accumulated gas costs.
 	static ASTGasConsumptionSelfAccumulated structuralEstimation(
-		eth::AssemblyItems const& _items,
+		vap::AssemblyItems const& _items,
 		std::vector<ASTNode const*> const& _ast
 	);
 	/// @returns a mapping from nodes with non-overlapping source locations to gas consumptions such that
@@ -63,7 +63,7 @@ public:
 	/// @returns the estimated gas consumption by the (public or external) function with the
 	/// given signature. If no signature is given, estimates the maximum gas usage.
 	static GasConsumption functionalEstimation(
-		eth::AssemblyItems const& _items,
+		vap::AssemblyItems const& _items,
 		std::string const& _signature = ""
 	);
 
@@ -71,7 +71,7 @@ public:
 	/// offset into the list of assembly items.
 	/// @note this does not work correctly for recursive functions.
 	static GasConsumption functionalEstimation(
-		eth::AssemblyItems const& _items,
+		vap::AssemblyItems const& _items,
 		size_t const& _offset,
 		FunctionDefinition const& _function
 	);

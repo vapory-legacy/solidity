@@ -27,7 +27,7 @@
 
 namespace dev
 {
-namespace eth
+namespace vap
 {
 
 using ReadCallback = std::function<std::string(std::string const&)>;

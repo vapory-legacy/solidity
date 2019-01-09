@@ -25,7 +25,7 @@
 #include <string>
 #include <tuple>
 #include <boost/test/unit_test.hpp>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 #include <libsolidity/interface/Exceptions.h>
 #include <test/libsolidity/SolidityExecutionFramework.h>
 
@@ -1441,7 +1441,7 @@ BOOST_AUTO_TEST_CASE(blockchain)
 			}
 		}
 	)";
-	BOOST_CHECK(m_rpc.rpcCall("miner_setEtherbase", {"\"0x1212121212121212121212121212121212121212\""}).asBool() == true);
+	BOOST_CHECK(m_rpc.rpcCall("miner_setVaporbase", {"\"0x1212121212121212121212121212121212121212\""}).asBool() == true);
 	m_rpc.test_mineBlocks(5);
 	compileAndRun(sourceCode, 27);
 	ABI_CHECK(callContractFunctionWithValue("someInfo()", 28), encodeArgs(28, u256("0x1212121212121212121212121212121212121212"), 7));
@@ -1679,7 +1679,7 @@ BOOST_AUTO_TEST_CASE(convert_uint_to_fixed_bytes_greater_size)
 	);
 }
 
-BOOST_AUTO_TEST_CASE(send_ether)
+BOOST_AUTO_TEST_CASE(send_vapor)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -1697,7 +1697,7 @@ BOOST_AUTO_TEST_CASE(send_ether)
 	BOOST_CHECK_EQUAL(balanceAt(address), amount);
 }
 
-BOOST_AUTO_TEST_CASE(transfer_ether)
+BOOST_AUTO_TEST_CASE(transfer_vapor)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -2365,7 +2365,7 @@ BOOST_AUTO_TEST_CASE(contracts_as_addresses)
 {
 	char const* sourceCode = R"(
 		contract helper {
-			function() payable { } // can receive ether
+			function() payable { } // can receive vapor
 		}
 		contract test {
 			helper h;
@@ -4953,7 +4953,7 @@ BOOST_AUTO_TEST_CASE(assignment_to_const_var_involving_keccak)
 	ABI_CHECK(callContractFunction("f()"), encodeArgs(dev::keccak256("abc")));
 }
 
-// Disabled until https://github.com/ethereum/solidity/issues/715 is implemented
+// Disabled until https://github.com/vaporyco/solidity/issues/715 is implemented
 //BOOST_AUTO_TEST_CASE(assignment_to_const_array_vars)
 //{
 //	char const* sourceCode = R"(
@@ -4967,7 +4967,7 @@ BOOST_AUTO_TEST_CASE(assignment_to_const_var_involving_keccak)
 //	ABI_CHECK(callContractFunction("f()"), encodeArgs(1 + 2 + 3));
 //}
 
-// Disabled until https://github.com/ethereum/solidity/issues/715 is implemented
+// Disabled until https://github.com/vaporyco/solidity/issues/715 is implemented
 //BOOST_AUTO_TEST_CASE(constant_struct)
 //{
 //	char const* sourceCode = R"(
@@ -5533,7 +5533,7 @@ BOOST_AUTO_TEST_CASE(struct_delete_struct_in_mapping)
 	ABI_CHECK(callContractFunction("deleteIt()"), encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_out_of_band_access)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_out_of_band_access)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -5557,7 +5557,7 @@ BOOST_AUTO_TEST_CASE(evm_exceptions_out_of_band_access)
 	ABI_CHECK(callContractFunction("test()"), encodeArgs(false));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_call_fail)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_in_constructor_call_fail)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -5581,7 +5581,7 @@ BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_call_fail)
 	ABI_CHECK(callContractFunction("test()"), encodeArgs(2));
 }
 
-BOOST_AUTO_TEST_CASE(evm_exceptions_in_constructor_out_of_baund)
+BOOST_AUTO_TEST_CASE(vvm_exceptions_in_constructor_out_of_baund)
 {
 	char const* sourceCode = R"(
 		contract A {
@@ -5636,10 +5636,10 @@ BOOST_AUTO_TEST_CASE(failing_send)
 	BOOST_REQUIRE(callContractFunction("callHelper(address)", c_helperAddress) == encodeArgs(true, 20));
 }
 
-BOOST_AUTO_TEST_CASE(send_zero_ether)
+BOOST_AUTO_TEST_CASE(send_zero_vapor)
 {
-	// Sending zero ether to a contract should still invoke the fallback function
-	// (it previously did not because the gas stipend was not provided by the EVM)
+	// Sending zero vapor to a contract should still invoke the fallback function
+	// (it previously did not because the gas stipend was not provided by the VVM)
 	char const* sourceCode = R"(
 		contract Receiver {
 			function () payable {
@@ -7134,7 +7134,7 @@ BOOST_AUTO_TEST_CASE(contract_binary_dependencies)
 	compileAndRun(sourceCode);
 }
 
-BOOST_AUTO_TEST_CASE(reject_ether_sent_to_library)
+BOOST_AUTO_TEST_CASE(reject_vapor_sent_to_library)
 {
 	char const* sourceCode = R"(
 		library lib {}
@@ -8326,7 +8326,7 @@ BOOST_AUTO_TEST_CASE(cleanup_bytes_types)
 
 BOOST_AUTO_TEST_CASE(skip_dynamic_types)
 {
-	// The EVM cannot provide access to dynamically-sized return values, so we have to skip them.
+	// The VVM cannot provide access to dynamically-sized return values, so we have to skip them.
 	char const* sourceCode = R"(
 		contract C {
 			function f() returns (uint, uint[], uint) {
@@ -8710,7 +8710,7 @@ BOOST_AUTO_TEST_CASE(no_nonpayable_circumvention_by_modifier)
 	char const* sourceCode = R"(
 		contract C {
 			modifier tryCircumvent {
-				if (false) _; // avoid the function, we should still not accept ether
+				if (false) _; // avoid the function, we should still not accept vapor
 			}
 			function f() tryCircumvent returns (uint) {
 				return msg.value;

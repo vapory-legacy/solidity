@@ -20,7 +20,7 @@ contract ico is safeMath {
         bool empty;
     }
     struct brought_s {
-        uint256 eth;
+        uint256 vap;
         uint256 cor;
         uint256 corp;
     }
@@ -191,7 +191,7 @@ contract ico is safeMath {
         token(tokenAddr).mint(_addr, _amount);
     }
     
-    function setICOEthPrice(uint256 value) external {
+    function setICOVapPrice(uint256 value) external {
         /*
             Setting of the ICO ETC USD rates which can only be calle by a pre-defined address. 
             After this function is completed till the call of the next function (which is at least an exchangeRateDelay array) this rate counts.
@@ -222,7 +222,7 @@ contract ico is safeMath {
             Closing the ICO.
             It is only possible when the ICO period passed and only by the owner.
             The 96% of the whole amount of the token is generated to the address of the fundation.
-            Ethers which are situated in this contract will be sent to the address of the fundation.
+            Vapors which are situated in this contract will be sent to the address of the fundation.
         */
         require( msg.sender == owner );
         require( block.number > icoDelay );
@@ -269,8 +269,8 @@ contract ico is safeMath {
             In this case the address gets back the 90% of the amount which was spent for token during the ICO period.
         */
         require( aborted );
-        require( brought[msg.sender].eth > 0 );
-        uint256 _val = brought[msg.sender].eth * 90 / 100;
+        require( brought[msg.sender].vap > 0 );
+        uint256 _val = brought[msg.sender].vap * 90 / 100;
         delete brought[msg.sender];
         require( msg.sender.send(_val) );
     }
@@ -288,7 +288,7 @@ contract ico is safeMath {
         /*
             Buying a token
             
-            If there is not at least 0.2 ether balance on the beneficiaryAddress then the amount of the ether which was intended for the purchase will be reduced by 0.2 and that will be sent to the address of the beneficiary.
+            If there is not at least 0.2 vapor balance on the beneficiaryAddress then the amount of the vapor which was intended for the purchase will be reduced by 0.2 and that will be sent to the address of the beneficiary.
             From the remaining amount calculate the reward with the help of the getIcoReward function.
             Only that affilate address is valid which has some token on it’s account.
             If there is a valid affilate address then calculate and credit the reward as well in the following way:
@@ -305,19 +305,19 @@ contract ico is safeMath {
             affilateAddress = 0x00;
         }
         uint256 _value = msg.value;
-        if ( beneficiaryAddress.balance < 0.2 ether ) {
-            require( beneficiaryAddress.send(0.2 ether) );
-            _value = safeSub(_value, 0.2 ether);
+        if ( beneficiaryAddress.balance < 0.2 vapor ) {
+            require( beneficiaryAddress.send(0.2 vapor) );
+            _value = safeSub(_value, 0.2 vapor);
         }
         var _reward = getIcoReward(_value);
         require( _reward > 0 );
         require( token(tokenAddr).mint(beneficiaryAddress, _reward) );
-        brought[beneficiaryAddress].eth = safeAdd(brought[beneficiaryAddress].eth, _value);
+        brought[beneficiaryAddress].vap = safeAdd(brought[beneficiaryAddress].vap, _value);
         brought[beneficiaryAddress].cor = safeAdd(brought[beneficiaryAddress].cor, _reward);
         totalMint = safeAdd(totalMint, _reward);
         require( foundationAddress.send(_value * 10 / 100) );
         uint256 extra;
-        if ( affilateAddress != 0x00 && ( brought[affilateAddress].eth > 0 || interestDB[affilateAddress][0].amount > 0 ) ) {
+        if ( affilateAddress != 0x00 && ( brought[affilateAddress].vap > 0 || interestDB[affilateAddress][0].amount > 0 ) ) {
             affiliate[affilateAddress].weight = safeAdd(affiliate[affilateAddress].weight, _reward);
             extra = affiliate[affilateAddress].weight;
             uint256 rate;
@@ -359,12 +359,12 @@ contract ico is safeMath {
         /*
             Expected token volume at token purchase
             
-            @value The amount of ether for the purchase
+            @value The amount of vapor for the purchase
             @reward Amount of the token
                 x = (value * 1e6 * USD_ETC_exchange rate / 1e4 / 1e18) * bonus percentage
                 2.700000 token = (1e18 * 1e6 * 22500 / 1e4 / 1e18) * 1.20
         */
-        reward = (value * 1e6 * icoExchangeRate / icoExchangeRateM / 1 ether) * (ICObonus() + 100) / 100;
+        reward = (value * 1e6 * icoExchangeRate / icoExchangeRateM / 1 vapor) * (ICObonus() + 100) / 100;
         if ( reward < 5e6) { return 0; }
     }
     

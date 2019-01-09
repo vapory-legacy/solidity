@@ -28,7 +28,7 @@
 #define ACCOUNT(n)    h256(account(n), h256::AlignRight)
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 
 namespace dev
 {
@@ -42,7 +42,7 @@ namespace
 
 static char const* ensCode = R"DELIMITER(
 ;;; ---------------------------------------------------------------------------
-;;; @title The Ethereum Name Service registry.
+;;; @title The Vapory Name Service registry.
 ;;; @author Daniel Ellison <daniel@syrinx.net>
 
 (seq
@@ -69,7 +69,7 @@ static char const* ensCode = R"DELIMITER(
   (def 'set-node-resolver 0x1896f70a) ; setResolver(bytes32,address)
   (def 'set-node-ttl      0x14ab9038) ; setTTL(bytes32,uint64)
 
-  ;; Jumping here causes an EVM error.
+  ;; Jumping here causes an VVM error.
   (def 'invalid-location 0x02)
 
   ;; --------------------------------------------------------------------------
@@ -458,8 +458,8 @@ BOOST_AUTO_TEST_CASE(create_subnode)
 {
 	deployEns();
 
-	// Set ownership of "eth" sub-node to account(1)
-	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("eth")), ACCOUNT(1)) == encodeArgs());
+	// Set ownership of "vap" sub-node to account(1)
+	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("vap")), ACCOUNT(1)) == encodeArgs());
 
 	// Check that an event was raised and contents are correct.
 	BOOST_REQUIRE(m_logs.size() == 1);
@@ -467,10 +467,10 @@ BOOST_AUTO_TEST_CASE(create_subnode)
 	BOOST_REQUIRE(m_logs[0].topics.size() == 3);
 	BOOST_CHECK(m_logs[0].topics[0] == keccak256(string("NewOwner(bytes32,bytes32,address)")));
 	BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
-	BOOST_CHECK(m_logs[0].topics[2] == keccak256(string("eth")));
+	BOOST_CHECK(m_logs[0].topics[2] == keccak256(string("vap")));
 
 	// Verify that the sub-node owner is now account(1).
-	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
+	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("vap").asBytes());
 	BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) == encodeArgs(ACCOUNT(1)));
 }
 
@@ -478,16 +478,16 @@ BOOST_AUTO_TEST_CASE(create_subnode_fail)
 {
 	deployEns();
 
-	// Send account(1) some ether for gas.
-	sendEther(account(1), 1000 * ether);
-	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
+	// Send account(1) some vapor for gas.
+	sendVapor(account(1), 1000 * vapor);
+	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * vapor);
 
-	// account(1) tries to set ownership of the "eth" sub-node.
+	// account(1) tries to set ownership of the "vap" sub-node.
 	m_sender = account(1);
-	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("eth")), ACCOUNT(1)) == encodeArgs());
+	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("vap")), ACCOUNT(1)) == encodeArgs());
 
 	// Verify that the sub-node owner remains at default zero address.
-	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
+	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("vap").asBytes());
 	BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) == encodeArgs(0));
 }
 

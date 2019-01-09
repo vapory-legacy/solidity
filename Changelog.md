@@ -3,7 +3,7 @@
 Features:
  * Code Generator: Always use all available gas for calls as experimental 0.5.0 feature
    (previously, some amount was retained in order to work in pre-tangerine whistle
-   EVM versions)
+   VVM versions)
  * Code Generator: Do not accept data with less than four bytes (truncated function
    signature) for regular function calls - fallback function is invoked instead.
  * Parser: Better error message for unexpected trailing comma in parameter lists.
@@ -57,7 +57,7 @@ Features:
  * ABI JSON: Include new field ``stateMutability`` with values ``pure``, ``view``,
    ``nonpayable`` and ``payable``.
  * Analyzer: Experimental partial support for Z3 SMT checker ("SMTChecker").
- * Build System: Shared libraries (``libdevcore``, ``libevmasm``, ``libsolidity``
+ * Build System: Shared libraries (``libdevcore``, ``libvvmasm``, ``libsolidity``
    and ``liblll``) are no longer produced during the build process.
  * Code generator: Experimental new implementation of ABI encoder that can
    encode arbitrarily nested arrays ("ABIEncoderV2")
@@ -195,7 +195,7 @@ Features:
  * Add ``assert(condition)``, which throws if condition is false (meant for internal errors).
  * Add ``require(condition)``, which throws if condition is false (meant for invalid input).
  * Commandline interface: Do not overwrite files unless forced.
- * Introduce ``.transfer(value)`` for sending Ether.
+ * Introduce ``.transfer(value)`` for sending Vapor.
  * Code generator: Support ``revert()`` to abort with rolling back, but not consuming all gas.
  * Inline assembly: Support ``revert`` (EIP140) as an opcode.
  * Parser: Support scientific notation in numbers (e.g. ``2e8`` and ``200e-2``).
@@ -342,11 +342,11 @@ Bugfixes:
 
 This release deliberately breaks backwards compatibility mostly to
 enforce some safety features. The most important change is that you have
-to explicitly specify if functions can receive ether via the ``payable``
+to explicitly specify if functions can receive vapor via the ``payable``
 modifier. Furthermore, more situations cause exceptions to be thrown.
 
 Minimal changes to be made for upgrade:
- - Add ``payable`` to all functions that want to receive Ether
+ - Add ``payable`` to all functions that want to receive Vapor
    (including the constructor and the fallback function).
  - Change ``_`` to ``_;`` in modifiers.
  - Add version pragma to each file: ``pragma solidity ^0.4.0;``
@@ -356,9 +356,9 @@ Breaking Changes:
  * Source files have to specify the compiler version they are
    compatible with using e.g. ``pragma solidity ^0.4.0;`` or
    ``pragma solidity >=0.4.0 <0.4.8;``
- * Functions that want to receive Ether have to specify the
+ * Functions that want to receive Vapor have to specify the
    new ``payable`` modifier (otherwise they throw).
- * Contracts that want to receive Ether with a plain "send"
+ * Contracts that want to receive Vapor with a plain "send"
    have to implement a fallback function with the ``payable``
    modifier. Contracts now throw if no payable fallback
    function is defined and no function matches the signature.
@@ -373,7 +373,7 @@ Breaking Changes:
  * Removed ``--interface`` (Solidity interface) output option
  * JSON AST: General cleanup, renamed many nodes to match their C++ names.
  * JSON output: ``srcmap-runtime`` renamed to ``srcmapRuntime``.
- * Moved (and reworked) standard library contracts from inside the compiler to github.com/ethereum/solidity/std
+ * Moved (and reworked) standard library contracts from inside the compiler to github.com/vaporyco/solidity/std
    (``import "std";`` or ``import owned;`` do not work anymore).
  * Confusing and undocumented keyword ``after`` was removed.
  * New reserved words: ``abstract``, ``hex``, ``interface``, ``payable``, ``pure``, ``static``, ``view``.
@@ -550,7 +550,7 @@ Bugfixes:
  * Linker stage for compiler to insert other contract's addresses (used for libraries).
  * Compiler option to output runtime part of contracts.
  * Compile-time out of bounds check for access to fixed-size arrays by integer constants.
- * Version string includes libevmasm/libethereum's version (contains the optimizer).
+ * Version string includes libvvmasm/libvapory's version (contains the optimizer).
  * Bugfix: Accessors for constant public state variables.
  * Bugfix: Propagate exceptions in clone contracts.
  * Bugfix: Empty single-line comments are now treated properly.

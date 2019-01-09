@@ -22,7 +22,7 @@
 
 #include <test/libsolidity/SolidityExecutionFramework.h>
 
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
@@ -33,7 +33,7 @@
 #include <memory>
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 using namespace dev::test;
 
 namespace dev
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(storage_write_in_loops)
 	compareVersions("f(uint256)", 36);
 }
 
-// Test disabled with https://github.com/ethereum/solidity/pull/762
+// Test disabled with https://github.com/vaporyco/solidity/pull/762
 // Information in joining branches is not retained anymore.
 BOOST_AUTO_TEST_CASE(retain_information_in_branches)
 {

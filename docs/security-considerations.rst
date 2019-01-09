@@ -48,7 +48,7 @@ Re-Entrancy
 ===========
 
 Any interaction from a contract (A) with another contract (B) and any transfer
-of Ether hands over control to that contract (B). This makes it possible for B
+of Vapor hands over control to that contract (B). This makes it possible for B
 to call back into A before this interaction is completed. To give an example,
 the following code contains a bug (it is just a snippet and not a
 complete contract):
@@ -59,7 +59,7 @@ complete contract):
 
   // THIS CONTRACT CONTAINS A BUG - DO NOT USE
   contract Fund {
-      /// Mapping of ether shares of the contract.
+      /// Mapping of vapor shares of the contract.
       mapping(address => uint) shares;
       /// Withdraw your share.
       function withdraw() {
@@ -69,10 +69,10 @@ complete contract):
   }
 
 The problem is not too serious here because of the limited gas as part
-of ``send``, but it still exposes a weakness: Ether transfer always
+of ``send``, but it still exposes a weakness: Vapor transfer always
 includes code execution, so the recipient could be a contract that calls
 back into ``withdraw``. This would let it get multiple refunds and
-basically retrieve all the Ether in the contract.
+basically retrieve all the Vapor in the contract.
 
 To avoid re-entrancy, you can use the Checks-Effects-Interactions pattern as
 outlined further below:
@@ -82,7 +82,7 @@ outlined further below:
   pragma solidity ^0.4.11;
 
   contract Fund {
-      /// Mapping of ether shares of the contract.
+      /// Mapping of vapor shares of the contract.
       mapping(address => uint) shares;
       /// Withdraw your share.
       function withdraw() {
@@ -92,7 +92,7 @@ outlined further below:
       }
   }
 
-Note that re-entrancy is not only an effect of Ether transfer but of any
+Note that re-entrancy is not only an effect of Vapor transfer but of any
 function call on another contract. Furthermore, you also have to take
 multi-contract situations into account. A called contract could modify the
 state of another contract you depend on.
@@ -107,19 +107,19 @@ contract to be stalled at a certain point. This may not apply to ``constant`` fu
 to read data from the blockchain. Still, such functions may be called by other contracts as part of on-chain operations
 and stall those. Please be explicit about such cases in the documentation of your contracts.
 
-Sending and Receiving Ether
+Sending and Receiving Vapor
 ===========================
 
-- Neither contracts nor "external accounts" are currently able to prevent that someone sends them Ether.
+- Neither contracts nor "external accounts" are currently able to prevent that someone sends them Vapor.
   Contracts can react on and reject a regular transfer, but there are ways
-  to move Ether without creating a message call. One way is to simply "mine to"
+  to move Vapor without creating a message call. One way is to simply "mine to"
   the contract address and the second way is using ``selfdestruct(x)``. 
 
-- If a contract receives Ether (without a function being called), the fallback function is executed.
-  If it does not have a fallback function, the Ether will be rejected (by throwing an exception).
+- If a contract receives Vapor (without a function being called), the fallback function is executed.
+  If it does not have a fallback function, the Vapor will be rejected (by throwing an exception).
   During the execution of the fallback function, the contract can only rely
   on the "gas stipend" (2300 gas) being available to it at that time. This stipend is not enough to access storage in any way.
-  To be sure that your contract can receive Ether in that way, check the gas requirements of the fallback function
+  To be sure that your contract can receive Vapor in that way, check the gas requirements of the fallback function
   (for example in the "details" section in Remix).
 
 - There is a way to forward more gas to the receiving contract using
@@ -130,13 +130,13 @@ Sending and Receiving Ether
   into the sending contract or other state changes you might not have thought of.
   So it allows for great flexibility for honest users but also for malicious actors.
 
-- If you want to send Ether using ``address.transfer``, there are certain details to be aware of:
+- If you want to send Vapor using ``address.transfer``, there are certain details to be aware of:
 
   1. If the recipient is a contract, it causes its fallback function to be executed which can, in turn, call back the sending contract.
-  2. Sending Ether can fail due to the call depth going above 1024. Since the caller is in total control of the call
+  2. Sending Vapor can fail due to the call depth going above 1024. Since the caller is in total control of the call
      depth, they can force the transfer to fail; take this possibility into account or use ``send`` and make sure to always check its return value. Better yet,
-     write your contract using a pattern where the recipient can withdraw Ether instead.
-  3. Sending Ether can also fail because the execution of the recipient contract
+     write your contract using a pattern where the recipient can withdraw Vapor instead.
+  3. Sending Vapor can also fail because the execution of the recipient contract
      requires more than the allotted amount of gas (explicitly by using ``require``,
      ``assert``, ``revert``, ``throw`` or
      because the operation is just too expensive) - it "runs out of gas" (OOG).
@@ -179,7 +179,7 @@ Never use tx.origin for authorization. Let's say you have a wallet contract like
         }
     }
 
-Now someone tricks you into sending ether to the address of this attack wallet::
+Now someone tricks you into sending vapor to the address of this attack wallet::
 
     pragma solidity ^0.4.11;
 
@@ -207,7 +207,7 @@ Minor Details
 
 - In ``for (var i = 0; i < arrayName.length; i++) { ... }``, the type of ``i`` will be ``uint8``, because this is the smallest type that is required to hold the value ``0``. If the array has more than 255 elements, the loop will not terminate.
 - The ``constant`` keyword for functions is currently not enforced by the compiler.
-  Furthermore, it is not enforced by the EVM, so a contract function that "claims"
+  Furthermore, it is not enforced by the VVM, so a contract function that "claims"
   to be constant might still cause changes to the state.
 - Types that do not occupy the full 32 bytes might contain "dirty higher order bits".
   This is especially important if you access ``msg.data`` - it poses a malleability risk:
@@ -220,12 +220,12 @@ Minor Details
 Recommendations
 ***************
 
-Restrict the Amount of Ether
+Restrict the Amount of Vapor
 ============================
 
-Restrict the amount of Ether (or other tokens) that can be stored in a smart
+Restrict the amount of Vapor (or other tokens) that can be stored in a smart
 contract. If your source code, the compiler or the platform has a bug, these
-funds may be lost. If you want to limit your loss, limit the amount of Ether.
+funds may be lost. If you want to limit your loss, limit the amount of Vapor.
 
 Keep it Small and Modular
 =========================
@@ -240,7 +240,7 @@ Use the Checks-Effects-Interactions Pattern
 ===========================================
 
 Most functions will first perform some checks (who called the function,
-are the arguments in range, did they send enough Ether, does the person
+are the arguments in range, did they send enough Vapor, does the person
 have tokens, etc.). These checks should be done first.
 
 As the second step, if all checks passed, effects to the state variables
@@ -262,7 +262,7 @@ it might be a good idea, especially for new code, to include some kind
 of fail-safe mechanism:
 
 You can add a function in your smart contract that performs some
-self-checks like "Has any Ether leaked?",
+self-checks like "Has any Vapor leaked?",
 "Is the sum of the tokens equal to the balance of the contract?" or similar things.
 Keep in mind that you cannot use too much gas for that, so help through off-chain
 computations might be needed there.

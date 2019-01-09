@@ -34,7 +34,7 @@ SOLJSON="$REPO_ROOT/build/solc/soljson.js"
 DIR=$(mktemp -d)
 (
     echo "Preparing solc-js..."
-    git clone --depth 1 https://github.com/ethereum/solc-js "$DIR"
+    git clone --depth 1 https://github.com/vaporyco/solc-js "$DIR"
     cd "$DIR"
     # disable "prepublish" script which downloads the latest version
     # (we will replace it anyway and it is often incorrectly cached

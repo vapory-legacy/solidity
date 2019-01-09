@@ -1024,7 +1024,7 @@ BOOST_AUTO_TEST_CASE(multiple_statemutability_specifiers)
 	CHECK_PARSE_ERROR(text, "State mutability already specified as \"pure\".");
 }
 
-BOOST_AUTO_TEST_CASE(literal_constants_with_ether_subdenominations)
+BOOST_AUTO_TEST_CASE(literal_constants_with_vapor_subdenominations)
 {
 	char const* text = R"(
 		contract c {
@@ -1033,7 +1033,7 @@ BOOST_AUTO_TEST_CASE(literal_constants_with_ether_subdenominations)
 				 a = 1 wei;
 				 b = 2 szabo;
 				 c = 3 finney;
-				 b = 4 ether;
+				 b = 4 vapor;
 			}
 			uint256 a;
 			uint256 b;
@@ -1043,7 +1043,7 @@ BOOST_AUTO_TEST_CASE(literal_constants_with_ether_subdenominations)
 	BOOST_CHECK(successParse(text));
 }
 
-BOOST_AUTO_TEST_CASE(literal_constants_with_ether_subdenominations_in_expressions)
+BOOST_AUTO_TEST_CASE(literal_constants_with_vapor_subdenominations_in_expressions)
 {
 	char const* text = R"(
 		contract c {

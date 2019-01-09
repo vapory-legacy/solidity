@@ -1,5 +1,5 @@
 FROM alpine
-MAINTAINER chriseth <chris@ethereum.org>
+MAINTAINER chriseth <chris@vapory.org>
 #Official solidity docker image
 
 #Establish working directory as solidity

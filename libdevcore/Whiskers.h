@@ -15,7 +15,7 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /** @file Whiskers.h
- * @author Chris <chis@ethereum.org>
+ * @author Chris <chis@vapory.org>
  * @date 2017
  *
  * Moustache-like templates.
