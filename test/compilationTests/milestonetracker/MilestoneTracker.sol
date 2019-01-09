@@ -50,7 +50,7 @@ contract MilestoneTracker {
         address reviewer;       // Can reject the completion of this milestone
         uint reviewTime;        // How many seconds the reviewer has to review
         address paymentSource;  // Where the milestone payment is sent from
-        bytes payData;          // Data defining how much ether is sent where
+        bytes payData;          // Data defining how much vapor is sent where
 
         MilestoneStatus status; // Current status of the milestone
                                 // (Completed, AuthorizedForPayment...)
@@ -160,10 +160,10 @@ contract MilestoneTracker {
     ///  milestones, this will require a user interface to be built up to
     ///  support this functionality as asks for RLP encoded bytecode to be
     ///  generated, until this interface is built you can use this script:
-    ///  https://github.com/Giveth/milestonetracker/blob/master/js/milestonetracker_helper.js
+    ///  https://github.com/Givvap/milestonetracker/blob/master/js/milestonetracker_helper.js
     ///  the functions milestones2bytes and bytes2milestones will enable the
     ///  recipient to encode and decode a list of milestones, also see
-    ///  https://github.com/Giveth/milestonetracker/blob/master/README.md
+    ///  https://github.com/Givvap/milestonetracker/blob/master/README.md
     /// @param _newMilestones The RLP encoded list of milestones; each milestone
     ///  has these fields:
     ///       string description,

@@ -102,7 +102,7 @@ this nonsensical example::
         function f() returns (uint ret) { return g(7) + f(); }
     }
 
-These function calls are translated into simple jumps inside the EVM. This has
+These function calls are translated into simple jumps inside the VVM. This has
 the effect that the current memory is not cleared, i.e. passing memory references
 to internally-called functions is very efficient. Only functions of the same
 contract can be called internally.
@@ -238,12 +238,12 @@ creation-dependencies are not possible.
         }
 
         function createAndEndowD(uint arg, uint amount) payable {
-            // Send ether along with the creation
+            // Send vapor along with the creation
             D newD = (new D).value(amount)(arg);
         }
     }
 
-As seen in the example, it is possible to forward Ether while creating
+As seen in the example, it is possible to forward Vapor while creating
 an instance of ``D`` using the ``.value()`` option, but it is not possible
 to limit the amount of gas.
 If the creation fails (due to out-of-stack, not enough balance or other problems),
@@ -402,7 +402,7 @@ and the low-level functions ``call``, ``delegatecall`` and ``callcode`` -- those
 of an exception instead of "bubbling up".
 
 .. warning::
-    The low-level ``call``, ``delegatecall`` and ``callcode`` will return success if the calling account is non-existent, as part of the design of EVM. Existence must be checked prior to calling if desired.
+    The low-level ``call``, ``delegatecall`` and ``callcode`` will return success if the calling account is non-existent, as part of the design of VVM. Existence must be checked prior to calling if desired.
 
 Catching exceptions is not yet possible.
 
@@ -441,13 +441,13 @@ A ``require``-style exception is generated in the following situations:
 #. If you call a function via a message call but it does not finish properly (i.e. it runs out of gas, has no matching function, or throws an exception itself), except when a low level operation ``call``, ``send``, ``delegatecall`` or ``callcode`` is used.  The low level operations never throw exceptions but indicate failures by returning ``false``.
 #. If you create a contract using the ``new`` keyword but the contract creation does not finish properly (see above for the definition of "not finish properly").
 #. If you perform an external function call targeting a contract that contains no code.
-#. If your contract receives Ether via a public function without ``payable`` modifier (including the constructor and the fallback function).
-#. If your contract receives Ether via a public getter function.
+#. If your contract receives Vapor via a public function without ``payable`` modifier (including the constructor and the fallback function).
+#. If your contract receives Vapor via a public getter function.
 #. If a ``.transfer()`` fails.
 
 Internally, Solidity performs a revert operation (instruction ``0xfd``) for a ``require``-style exception and executes an invalid operation
 (instruction ``0xfe``) to throw an ``assert``-style exception. In both cases, this causes
-the EVM to revert all changes made to the state. The reason for reverting is that there is no safe way to continue execution, because an expected effect
+the VVM to revert all changes made to the state. The reason for reverting is that there is no safe way to continue execution, because an expected effect
 did not occur. Because we want to retain the atomicity of transactions, the safest thing to do is to revert all changes and make the whole transaction
 (or at least call) without effect. Note that ``assert``-style exceptions consume all gas available to the call, while
 ``require``-style exceptions will not consume any gas starting from the Metropolis release.

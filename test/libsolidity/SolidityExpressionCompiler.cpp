@@ -160,7 +160,7 @@ bytes compileFirstExpression(
 				));
 			bytes instructions = context.assembledObject().bytecode;
 			// debug
-			// cout << eth::disassemble(instructions) << endl;
+			// cout << vap::disassemble(instructions) << endl;
 			return instructions;
 		}
 	BOOST_FAIL("No contract found in source.");
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(int_literal)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_wei_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_wei_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(int_with_wei_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_szabo_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_szabo_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(int_with_szabo_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_finney_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_finney_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
@@ -256,12 +256,12 @@ BOOST_AUTO_TEST_CASE(int_with_finney_ether_subdenomination)
 	BOOST_CHECK_EQUAL_COLLECTIONS(code.begin(), code.end(), expectation.begin(), expectation.end());
 }
 
-BOOST_AUTO_TEST_CASE(int_with_ether_ether_subdenomination)
+BOOST_AUTO_TEST_CASE(int_with_vapor_vapor_subdenomination)
 {
 	char const* sourceCode = R"(
 		contract test {
 			function test () {
-				 var x = 1 ether;
+				 var x = 1 vapor;
 			}
 		}
 	)";

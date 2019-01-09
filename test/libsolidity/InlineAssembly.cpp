@@ -27,7 +27,7 @@
 #include <libsolidity/interface/Exceptions.h>
 #include <libsolidity/ast/AST.h>
 #include <test/libsolidity/ErrorCheck.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -51,7 +51,7 @@ boost::optional<Error> parseAndReturnFirstError(
 	string const& _source,
 	bool _assemble = false,
 	bool _allowWarnings = true,
-	AssemblyStack::Machine _machine = AssemblyStack::Machine::EVM
+	AssemblyStack::Machine _machine = AssemblyStack::Machine::VVM
 )
 {
 	AssemblyStack stack;
@@ -87,7 +87,7 @@ bool successParse(
 	string const& _source,
 	bool _assemble = false,
 	bool _allowWarnings = true,
-	AssemblyStack::Machine _machine = AssemblyStack::Machine::EVM
+	AssemblyStack::Machine _machine = AssemblyStack::Machine::VVM
 )
 {
 	return !parseAndReturnFirstError(_source, _assemble, _allowWarnings, _machine);
@@ -95,8 +95,8 @@ bool successParse(
 
 bool successAssemble(string const& _source, bool _allowWarnings = true)
 {
-	return successParse(_source, true, _allowWarnings, AssemblyStack::Machine::EVM) &&
-		successParse(_source, true, _allowWarnings, AssemblyStack::Machine::EVM15);
+	return successParse(_source, true, _allowWarnings, AssemblyStack::Machine::VVM) &&
+		successParse(_source, true, _allowWarnings, AssemblyStack::Machine::VVM15);
 }
 
 Error expectError(std::string const& _source, bool _assemble, bool _allowWarnings = false)

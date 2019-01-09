@@ -2,7 +2,7 @@
 Solidity Assembly
 #################
 
-.. index:: ! assembly, ! asm, ! evmasm
+.. index:: ! assembly, ! asm, ! vvmasm
 
 Solidity defines an assembly language that can also be used without Solidity.
 This assembly language can also be used as "inline assembly" inside Solidity
@@ -16,7 +16,7 @@ Inline Assembly
 
 For more fine-grained control especially in order to enhance the language by writing libraries,
 it is possible to interleave Solidity statements with inline assembly in a language close
-to the one of the virtual machine. Due to the fact that the EVM is a stack machine, it is
+to the one of the virtual machine. Due to the fact that the VVM is a stack machine, it is
 often hard to address the correct stack slot and provide arguments to opcodes at the correct
 point on the stack. Solidity's inline assembly tries to facilitate that and other issues
 arising when writing manual assembly by the following features:
@@ -33,7 +33,7 @@ arising when writing manual assembly by the following features:
 We now want to describe the inline assembly language in detail.
 
 .. warning::
-    Inline assembly is a way to access the Ethereum Virtual Machine
+    Inline assembly is a way to access the Vapory Virtual Machine
     at a low level. This discards several important safety
     features of Solidity.
 
@@ -146,7 +146,7 @@ these curly braces, the following can be used (see the later sections for more d
 Opcodes
 -------
 
-This document does not want to be a full description of the Ethereum virtual machine, but the
+This document does not want to be a full description of the Vapory virtual machine, but the
 following list can be used as a reference of its opcodes.
 
 If an opcode takes arguments (always from the top of the stack), they are given in parentheses.
@@ -398,7 +398,7 @@ changes during the call, and thus references to local variables will be wrong.
 Labels
 ------
 
-Another problem in EVM assembly is that ``jump`` and ``jumpi`` use absolute addresses
+Another problem in VVM assembly is that ``jump`` and ``jumpi`` use absolute addresses
 which can change easily. Solidity inline assembly provides labels to make the use of
 jumps easier. Note that labels are a low-level feature and it is possible to write
 efficient assembly without labels, just using assembly functions, loops, if and switch instructions
@@ -650,7 +650,7 @@ swap the contents of the stack but not the location of variables.
 Conventions in Solidity
 -----------------------
 
-In contrast to EVM assembly, Solidity knows types which are narrower than 256 bits,
+In contrast to VVM assembly, Solidity knows types which are narrower than 256 bits,
 e.g. ``uint24``. In order to make them more efficient, most arithmetic operations just
 treat them as 256-bit numbers and the higher-order bits are only cleaned at the
 point where it is necessary, i.e. just shortly before they are written to memory

@@ -35,7 +35,7 @@ namespace dev
 namespace test
 {
 	using rational = boost::rational<dev::bigint>;
-	/// An Ethereum address: 20 bytes.
+	/// An Vapory address: 20 bytes.
 	/// @NOTE This is not endian-specific; it's just a bunch of bytes.
 	using Address = h160;
 
@@ -44,7 +44,7 @@ namespace test
 	static const u256 shannon = u256("1000000000");
 	static const u256 szabo = shannon * 1000;
 	static const u256 finney = szabo * 1000;
-	static const u256 ether = finney * 1000;
+	static const u256 vapor = finney * 1000;
 
 class ExecutionFramework
 {
@@ -207,7 +207,7 @@ private:
 
 protected:
 	void sendMessage(bytes const& _data, bool _isCreation, u256 const& _value = 0);
-	void sendEther(Address const& _to, u256 const& _value);
+	void sendVapor(Address const& _to, u256 const& _value);
 	size_t currentTimestamp();
 	size_t blockTimestamp(u256 _number);
 

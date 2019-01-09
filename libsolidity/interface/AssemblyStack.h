@@ -15,14 +15,14 @@
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Full assembly stack that can support EVM-assembly and JULIA as input and EVM, EVM1.5 and
+ * Full assembly stack that can support VVM-assembly and JULIA as input and VVM, VVM1.5 and
  * eWasm as output.
  */
 
 #pragma once
 
 #include <libsolidity/interface/ErrorReporter.h>
-#include <libevmasm/LinkerObject.h>
+#include <libvvmasm/LinkerObject.h>
 
 #include <string>
 #include <memory>
@@ -40,19 +40,19 @@ struct Block;
 
 struct MachineAssemblyObject
 {
-	std::shared_ptr<eth::LinkerObject> bytecode;
+	std::shared_ptr<vap::LinkerObject> bytecode;
 	std::string assembly;
 };
 
 /*
- * Full assembly stack that can support EVM-assembly and JULIA as input and EVM, EVM1.5 and
+ * Full assembly stack that can support VVM-assembly and JULIA as input and VVM, VVM1.5 and
  * eWasm as output.
  */
 class AssemblyStack
 {
 public:
 	enum class Language { JULIA, Assembly };
-	enum class Machine { EVM, EVM15, eWasm };
+	enum class Machine { VVM, VVM15, eWasm };
 
 	explicit AssemblyStack(Language _language = Language::Assembly):
 		m_language(_language), m_errorReporter(m_errors)

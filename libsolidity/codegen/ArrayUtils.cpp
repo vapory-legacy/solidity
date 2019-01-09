@@ -21,7 +21,7 @@
  */
 
 #include <libsolidity/codegen/ArrayUtils.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <libsolidity/codegen/CompilerContext.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 #include <libsolidity/ast/Types.h>
@@ -114,14 +114,14 @@ void ArrayUtils::copyArrayToStorage(ArrayType const& _targetType, ArrayType cons
 			_context << Instruction::SWAP3;
 			// stack: target_ref target_data_end source_length target_data_pos source_ref
 
-			eth::AssemblyItem copyLoopEndWithoutByteOffset = _context.newTag();
+			vap::AssemblyItem copyLoopEndWithoutByteOffset = _context.newTag();
 
 			// special case for short byte arrays: Store them together with their length.
 			if (_targetType.isByteArray())
 			{
 				// stack: target_ref target_data_end source_length target_data_pos source_ref
 				_context << Instruction::DUP3 << u256(31) << Instruction::LT;
-				eth::AssemblyItem longByteArray = _context.appendConditionalJump();
+				vap::AssemblyItem longByteArray = _context.appendConditionalJump();
 				// store the short byte array
 				solAssert(_sourceType.isByteArray(), "");
 				if (_sourceType.location() == DataLocation::Storage)
@@ -167,13 +167,13 @@ void ArrayUtils::copyArrayToStorage(ArrayType const& _targetType, ArrayType cons
 			if (haveByteOffsetSource)
 				_context << u256(0);
 			// stack: target_ref target_data_end source_data_pos target_data_pos source_data_end [target_byte_offset] [source_byte_offset]
-			eth::AssemblyItem copyLoopStart = _context.newTag();
+			vap::AssemblyItem copyLoopStart = _context.newTag();
 			_context << copyLoopStart;
 			// check for loop condition
 			_context
 				<< dupInstruction(3 + byteOffsetSize) << dupInstruction(2 + byteOffsetSize)
 				<< Instruction::GT << Instruction::ISZERO;
-			eth::AssemblyItem copyLoopEnd = _context.appendConditionalJump();
+			vap::AssemblyItem copyLoopEnd = _context.appendConditionalJump();
 			// stack: target_ref target_data_end source_data_pos target_data_pos source_data_end [target_byte_offset] [source_byte_offset]
 			// copy
 			if (sourceBaseType->category() == Type::Category::Array)
@@ -259,7 +259,7 @@ void ArrayUtils::copyArrayToStorage(ArrayType const& _targetType, ArrayType cons
 				// clear elements that might be left over in the current slot in target
 				// stack: target_ref target_data_end source_data_pos target_data_pos source_data_end target_byte_offset [source_byte_offset]
 				_context << dupInstruction(byteOffsetSize) << Instruction::ISZERO;
-				eth::AssemblyItem copyCleanupLoopEnd = _context.appendConditionalJump();
+				vap::AssemblyItem copyCleanupLoopEnd = _context.appendConditionalJump();
 				_context << dupInstruction(2 + byteOffsetSize) << dupInstruction(1 + byteOffsetSize);
 				StorageItem(_context, *targetBaseType).setToZero(SourceLocation(), true);
 				utils.incrementByteOffset(targetBaseType->storageBytes(), byteOffsetSize, byteOffsetSize + 2);
@@ -376,7 +376,7 @@ void ArrayUtils::copyArrayToMemory(ArrayType const& _sourceType, bool _padToWord
 			// stack: <length> <target + size>
 			m_context << Instruction::SWAP1 << u256(31) << Instruction::AND;
 			// stack: <target + size> <remainder = size % 32>
-			eth::AssemblyItem skip = m_context.newTag();
+			vap::AssemblyItem skip = m_context.newTag();
 			if (_sourceType.isDynamicallySized())
 			{
 				m_context << Instruction::DUP1 << Instruction::ISZERO;
@@ -421,13 +421,13 @@ void ArrayUtils::copyArrayToMemory(ArrayType const& _sourceType, bool _padToWord
 		// stack here: memory_offset storage_offset length
 		// jump to end if length is zero
 		m_context << Instruction::DUP1 << Instruction::ISZERO;
-		eth::AssemblyItem loopEnd = m_context.appendConditionalJump();
+		vap::AssemblyItem loopEnd = m_context.appendConditionalJump();
 		// Special case for tightly-stored byte arrays
 		if (_sourceType.isByteArray())
 		{
 			// stack here: memory_offset storage_offset length
 			m_context << Instruction::DUP1 << u256(31) << Instruction::LT;
-			eth::AssemblyItem longByteArray = m_context.appendConditionalJump();
+			vap::AssemblyItem longByteArray = m_context.appendConditionalJump();
 			// store the short byte array (discard lower-order byte)
 			m_context << u256(0x100) << Instruction::DUP1;
 			m_context << Instruction::DUP4 << Instruction::SLOAD;
@@ -463,7 +463,7 @@ void ArrayUtils::copyArrayToMemory(ArrayType const& _sourceType, bool _padToWord
 		if (haveByteOffset)
 			m_context << u256(0) << Instruction::SWAP1;
 		// stack here: memory_end_offset storage_data_offset [storage_byte_offset] memory_offset
-		eth::AssemblyItem loopStart = m_context.newTag();
+		vap::AssemblyItem loopStart = m_context.newTag();
 		m_context << loopStart;
 		// load and store
 		if (_sourceType.isByteArray())
@@ -595,12 +595,12 @@ void ArrayUtils::clearDynamicArray(ArrayType const& _type) const
 	// set length to zero
 	m_context << u256(0) << Instruction::DUP3 << Instruction::SSTORE;
 	// Special case: short byte arrays are stored togeher with their length
-	eth::AssemblyItem endTag = m_context.newTag();
+	vap::AssemblyItem endTag = m_context.newTag();
 	if (_type.isByteArray())
 	{
 		// stack: ref old_length
 		m_context << Instruction::DUP1 << u256(31) << Instruction::LT;
-		eth::AssemblyItem longByteArray = m_context.appendConditionalJump();
+		vap::AssemblyItem longByteArray = m_context.appendConditionalJump();
 		m_context << Instruction::POP;
 		m_context.appendJumpTo(endTag);
 		m_context.adjustStackOffset(1); // needed because of jump
@@ -640,7 +640,7 @@ void ArrayUtils::resizeDynamicArray(ArrayType const& _typeIn) const
 				solAssert(_type.baseType()->isValueType(), "Invalid storage size for non-value type.");
 
 			unsigned stackHeightStart = _context.stackHeight();
-			eth::AssemblyItem resizeEnd = _context.newTag();
+			vap::AssemblyItem resizeEnd = _context.newTag();
 
 			// stack: ref new_length
 			// fetch old length
@@ -651,7 +651,7 @@ void ArrayUtils::resizeDynamicArray(ArrayType const& _typeIn) const
 			// Special case for short byte arrays, they are stored together with their length
 			if (_type.isByteArray())
 			{
-				eth::AssemblyItem regularPath = _context.newTag();
+				vap::AssemblyItem regularPath = _context.newTag();
 				// We start by a large case-distinction about the old and new length of the byte array.
 
 				_context << Instruction::DUP3 << Instruction::SLOAD;
@@ -659,14 +659,14 @@ void ArrayUtils::resizeDynamicArray(ArrayType const& _typeIn) const
 
 				solAssert(_context.stackHeight() - stackHeightStart == 4 - 2, "3");
 				_context << Instruction::DUP2 << u256(31) << Instruction::LT;
-				eth::AssemblyItem currentIsLong = _context.appendConditionalJump();
+				vap::AssemblyItem currentIsLong = _context.appendConditionalJump();
 				_context << Instruction::DUP3 << u256(31) << Instruction::LT;
-				eth::AssemblyItem newIsLong = _context.appendConditionalJump();
+				vap::AssemblyItem newIsLong = _context.appendConditionalJump();
 
 				// Here: short -> short
 
 				// Compute 1 << (256 - 8 * new_size)
-				eth::AssemblyItem shortToShort = _context.newTag();
+				vap::AssemblyItem shortToShort = _context.newTag();
 				_context << shortToShort;
 				_context << Instruction::DUP3 << u256(8) << Instruction::MUL;
 				_context << u256(0x100) << Instruction::SUB;
@@ -791,16 +791,16 @@ void ArrayUtils::clearStorageLoop(TypePointer const& _type) const
 			// stack: end_pos pos
 
 			// jump to and return from the loop to allow for duplicate code removal
-			eth::AssemblyItem returnTag = _context.pushNewTag();
+			vap::AssemblyItem returnTag = _context.pushNewTag();
 			_context << Instruction::SWAP2 << Instruction::SWAP1;
 
 			// stack: <return tag> end_pos pos
-			eth::AssemblyItem loopStart = _context.appendJumpToNew();
+			vap::AssemblyItem loopStart = _context.appendJumpToNew();
 			_context << loopStart;
 			// check for loop condition
 			_context << Instruction::DUP1 << Instruction::DUP3
 					   << Instruction::GT << Instruction::ISZERO;
-			eth::AssemblyItem zeroLoopEnd = _context.newTag();
+			vap::AssemblyItem zeroLoopEnd = _context.newTag();
 			_context.appendConditionalJumpTo(zeroLoopEnd);
 			// delete
 			_context << u256(0);
@@ -933,7 +933,7 @@ void ArrayUtils::accessIndex(ArrayType const& _arrayType, bool _doBoundsCheck) c
 		break;
 	case DataLocation::Storage:
 	{
-		eth::AssemblyItem endTag = m_context.newTag();
+		vap::AssemblyItem endTag = m_context.newTag();
 		if (_arrayType.isByteArray())
 		{
 			// Special case of short byte arrays.

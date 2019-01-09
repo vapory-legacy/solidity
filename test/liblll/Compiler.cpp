@@ -41,7 +41,7 @@ namespace
 bool successCompile(string const& _sourceCode)
 {
 	vector<string> errors;
-	bytes bytecode = eth::compileLLL(_sourceCode, false, &errors);
+	bytes bytecode = vap::compileLLL(_sourceCode, false, &errors);
 	if (!errors.empty())
 		return false;
 	if (bytecode.empty())
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(valid_opcodes_functional)
 
 	for (size_t i = 0; i < opcodes_bytecode.size(); i++) {
 		vector<string> errors;
-		bytes code = eth::compileLLL(opcodes_lll[i], false, &errors);
+		bytes code = vap::compileLLL(opcodes_lll[i], false, &errors);
 
 		BOOST_REQUIRE_MESSAGE(errors.empty(), opcodes_lll[i]);
 
@@ -641,7 +641,7 @@ BOOST_AUTO_TEST_CASE(valid_opcodes_asm)
 
 	for (size_t i = 0; i < opcodes_bytecode.size(); i++) {
 		vector<string> errors;
-		bytes code = eth::compileLLL(opcodes_lll[i], false, &errors);
+		bytes code = vap::compileLLL(opcodes_lll[i], false, &errors);
 
 		BOOST_REQUIRE_MESSAGE(errors.empty(), opcodes_lll[i]);
 

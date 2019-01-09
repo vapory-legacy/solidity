@@ -31,7 +31,7 @@ using namespace dev;
 using namespace dev::solidity;
 using namespace std;
 
-char const* dev::solidity::VersionNumber = ETH_PROJECT_VERSION;
+char const* dev::solidity::VersionNumber = VAP_PROJECT_VERSION;
 
 string const dev::solidity::VersionString =
 	string(dev::solidity::VersionNumber) +

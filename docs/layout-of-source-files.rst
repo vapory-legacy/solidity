@@ -98,7 +98,7 @@ Use in Actual Compilers
 
 When the compiler is invoked, it is not only possible to specify how to
 discover the first element of a path, but it is possible to specify path prefix
-remappings so that e.g. ``github.com/ethereum/dapp-bin/library`` is remapped to
+remappings so that e.g. ``github.com/vaporyco/dapp-bin/library`` is remapped to
 ``/usr/local/dapp-bin/library`` and the compiler will read the files from there.
 If multiple remappings can be applied, the one with the longest key is tried first. This
 allows for a "fallback-remapping" with e.g. ``""`` maps to
@@ -118,18 +118,18 @@ in files in or below the directory ``context`` that import a file that
 starts with ``prefix`` are redirected by replacing ``prefix`` by ``target``.
 
 So as an example, if you clone
-``github.com/ethereum/dapp-bin/`` locally to ``/usr/local/dapp-bin``, you can use
+``github.com/vaporyco/dapp-bin/`` locally to ``/usr/local/dapp-bin``, you can use
 the following in your source file:
 
 ::
 
-  import "github.com/ethereum/dapp-bin/library/iterable_mapping.sol" as it_mapping;
+  import "github.com/vaporyco/dapp-bin/library/iterable_mapping.sol" as it_mapping;
 
 and then run the compiler as
 
 .. code-block:: bash
 
-  solc github.com/ethereum/dapp-bin/=/usr/local/dapp-bin/ source.sol
+  solc github.com/vaporyco/dapp-bin/=/usr/local/dapp-bin/ source.sol
 
 As a more complex example, suppose you rely on some module that uses a
 very old version of dapp-bin. That old version of dapp-bin is checked
@@ -137,8 +137,8 @@ out at ``/usr/local/dapp-bin_old``, then you can use
 
 .. code-block:: bash
 
-  solc module1:github.com/ethereum/dapp-bin/=/usr/local/dapp-bin/ \
-       module2:github.com/ethereum/dapp-bin/=/usr/local/dapp-bin_old/ \
+  solc module1:github.com/vaporyco/dapp-bin/=/usr/local/dapp-bin/ \
+       module2:github.com/vaporyco/dapp-bin/=/usr/local/dapp-bin_old/ \
        source.sol
 
 so that all imports in ``module2`` point to the old version but imports
@@ -155,11 +155,11 @@ with the longest common prefix is chosen.
 
 **Remix**:
 
-`Remix <https://remix.ethereum.org/>`_
+`Remix <https://remix.vapory.org/>`_
 provides an automatic remapping for github and will also automatically retrieve
 the file over the network:
 You can import the iterable mapping by e.g.
-``import "github.com/ethereum/dapp-bin/library/iterable_mapping.sol" as it_mapping;``.
+``import "github.com/vaporyco/dapp-bin/library/iterable_mapping.sol" as it_mapping;``.
 
 Other source code providers may be added in the future.
 

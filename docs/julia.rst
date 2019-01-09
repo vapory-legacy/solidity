@@ -4,10 +4,10 @@ Joyfully Universal Language for (Inline) Assembly
 
 .. _julia:
 
-.. index:: ! assembly, ! asm, ! evmasm, ! julia
+.. index:: ! assembly, ! asm, ! vvmasm, ! julia
 
 JULIA is an intermediate language that can compile to various different backends
-(EVM 1.0, EVM 1.5 and eWASM are planned).
+(VVM 1.0, VVM 1.5 and eWASM are planned).
 Because of that, it is designed to be a usable common denominator of all three
 platforms.
 It can already be used for "inline assembly" inside Solidity and
@@ -21,11 +21,11 @@ JULIA is typed, both variables and literals must specify the type with postfix
 notation. The supported types are ``bool``, ``u8``, ``s8``, ``u32``, ``s32``,
 ``u64``, ``s64``, ``u128``, ``s128``, ``u256`` and ``s256``.
 
-JULIA in itself does not even provide operators. If the EVM is targeted,
+JULIA in itself does not even provide operators. If the VVM is targeted,
 opcodes will be available as built-in functions, but they can be reimplemented
 if the backend changes. For a list of mandatory built-in functions, see the section below.
 
-The following example program assumes that the EVM opcodes ``mul``, ``div``
+The following example program assumes that the VVM opcodes ``mul``, ``div``
 and ``mod`` are available either natively or as functions and computes exponentiation.
 
 .. code::
@@ -46,7 +46,7 @@ and ``mod`` are available either natively or as functions and computes exponenti
     }
 
 It is also possible to implement the same function using a for-loop
-instead of with recursion. Here, we need the EVM opcodes ``lt`` (less-than)
+instead of with recursion. Here, we need the VVM opcodes ``lt`` (less-than)
 and ``add`` to be available.
 
 .. code::
@@ -184,9 +184,9 @@ on the various nodes of the AST. Any functions can have side effects, so
 E takes two state objects and the AST node and returns two new
 state objects and a variable number of other values.
 The two state objects are the global state object
-(which in the context of the EVM is the memory, storage and state of the
+(which in the context of the VVM is the memory, storage and state of the
 blockchain) and the local state object (the state of local variables, i.e. a
-segment of the stack in the EVM).
+segment of the stack in the VVM).
 If the AST node is a statement, E returns the two state objects and a "mode",
 which is used for the ``break`` and ``continue`` statements.
 If the AST node is an expression, E returns the two state objects and
@@ -361,7 +361,7 @@ The following functions must be available:
 | saru256(x:u256, y:u256) -> z:u256           | arithmetic right shift of x by y                                |
 +---------------------------------------------------------------------------------------------------------------+
 | byte(n:u256, x:u256) -> v:u256              | nth byte of x, where the most significant byte is the 0th byte  |
-| Cannot this be just replaced by and256(shr256(n, x), 0xff) and let it be optimised out by the EVM backend?    |
+| Cannot this be just replaced by and256(shr256(n, x), 0xff) and let it be optimised out by the VVM backend?    |
 +---------------------------------------------------------------------------------------------------------------+
 | *Memory and storage*                                                                                          |
 +---------------------------------------------------------------------------------------------------------------+
@@ -398,10 +398,10 @@ The following functions must be available:
 | outsize:u256) -> r:u256                     | and ``callvalue``                                               |
 +---------------------------------------------------------------------------------------------------------------+
 | stop()                                      | stop execution, identical to return(0,0)                        |
-| Perhaps it would make sense retiring this as it equals to return(0,0). It can be an optimisation by the EVM   |
+| Perhaps it would make sense retiring this as it equals to return(0,0). It can be an optimisation by the VVM   |
 | backend.                                                                                                      |
 +---------------------------------------------------------------------------------------------------------------+
-| abort()                                     | abort (equals to invalid instruction on EVM)                    |
+| abort()                                     | abort (equals to invalid instruction on VVM)                    |
 +---------------------------------------------------------------------------------------------------------------+
 | return(p:u256, s:u256)                      | end execution, return data mem[p..(p+s))                        |
 +---------------------------------------------------------------------------------------------------------------+
@@ -480,14 +480,14 @@ Backends
 --------
 
 Backends or targets are the translators from JULIA to a specific bytecode. Each of the backends can expose functions
-prefixed with the name of the backend. We reserve ``evm_`` and ``ewasm_`` prefixes for the two proposed backends.
+prefixed with the name of the backend. We reserve ``vvm_`` and ``ewasm_`` prefixes for the two proposed backends.
 
-Backend: EVM
+Backend: VVM
 ------------
 
-The EVM target will have all the underlying EVM opcodes exposed with the `evm_` prefix.
+The VVM target will have all the underlying VVM opcodes exposed with the `vvm_` prefix.
 
-Backend: "EVM 1.5"
+Backend: "VVM 1.5"
 ------------------
 
 TBD
@@ -523,7 +523,7 @@ An example JULIA Object is shown below:
             let size = datasize("runtime")
             let offset = allocate(size)
             // This will turn into a memory->memory copy for eWASM and
-            // a codecopy for EVM
+            // a codecopy for VVM
             datacopy(dataoffset("runtime"), offset, size)
             // this is a constructor and the runtime code is returned
             return(offset, size)
@@ -538,7 +538,7 @@ An example JULIA Object is shown below:
                 let size = datasize("Contract2")
                 let offset = allocate(size)
                 // This will turn into a memory->memory copy for eWASM and
-                // a codecopy for EVM
+                // a codecopy for VVM
                 datacopy(dataoffset("Contract2"), offset, size)
                 // constructor parameter is a single number 0x1234
                 mstore(add(offset, size), 0x1234)

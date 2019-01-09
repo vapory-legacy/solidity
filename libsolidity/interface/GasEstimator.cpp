@@ -25,16 +25,16 @@
 #include <functional>
 #include <memory>
 #include <libdevcore/SHA3.h>
-#include <libevmasm/ControlFlowGraph.h>
-#include <libevmasm/KnownState.h>
-#include <libevmasm/PathGasMeter.h>
+#include <libvvmasm/ControlFlowGraph.h>
+#include <libvvmasm/KnownState.h>
+#include <libvvmasm/PathGasMeter.h>
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/ast/ASTVisitor.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 using namespace dev::solidity;
 
 GasEstimator::ASTGasConsumptionSelfAccumulated GasEstimator::structuralEstimation(

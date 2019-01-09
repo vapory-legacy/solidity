@@ -30,7 +30,7 @@ contract TokenDestructible is Ownable {
       token.transfer(owner, balance);
     }
 
-    // Transfer Eth to owner and terminate contract
+    // Transfer Vap to owner and terminate contract
     selfdestruct(owner);
   }
 }

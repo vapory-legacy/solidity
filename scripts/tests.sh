@@ -34,21 +34,21 @@ echo "Running commandline tests..."
 "$REPO_ROOT/test/cmdlineTests.sh"
 
 # This conditional is only needed because we don't have a working Homebrew
-# install for `eth` at the time of writing, so we unzip the ZIP file locally
+# install for `vap` at the time of writing, so we unzip the ZIP file locally
 # instead.  This will go away soon.
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    ETH_PATH="$REPO_ROOT/eth"
+    VAP_PATH="$REPO_ROOT/vap"
 elif [ -z $CI ]; then
-    ETH_PATH="eth"
+    VAP_PATH="vap"
 else
     mkdir -p /tmp/test
     # Update hash below if binary is changed.
-    wget -q -O /tmp/test/eth https://github.com/ethereum/cpp-ethereum/releases/download/solidityTester/eth_byzantium2
-    test "$(shasum /tmp/test/eth)" = "4dc3f208475f622be7c8e53bee720e14cd254c6f  /tmp/test/eth"
+    wget -q -O /tmp/test/vap https://github.com/vaporyco/cpp-vapory/releases/download/solidityTester/vap_byzantium2
+    test "$(shasum /tmp/test/vap)" = "4dc3f208475f622be7c8e53bee720e14cd254c6f  /tmp/test/vap"
     sync
-    chmod +x /tmp/test/eth
+    chmod +x /tmp/test/vap
     sync # Otherwise we might get a "text file busy" error
-    ETH_PATH="/tmp/test/eth"
+    VAP_PATH="/tmp/test/vap"
 fi
 
 # This trailing ampersand directs the shell to run the command in the background,
@@ -56,23 +56,23 @@ fi
 # asynchronously. The shell will immediately return the return status of 0 for
 # true and continue as normal, either processing further commands in a script
 # or returning the cursor focus back to the user in a Linux terminal.
-$ETH_PATH --test -d /tmp/test &
-ETH_PID=$!
+$VAP_PATH --test -d /tmp/test &
+VAP_PID=$!
 
 # Wait until the IPC endpoint is available.  That won't be available instantly.
 # The node needs to get a little way into its startup sequence before the IPC
 # is available and is ready for the unit-tests to start talking to it.
-while [ ! -S /tmp/test/geth.ipc ]; do sleep 2; done
+while [ ! -S /tmp/test/gvap.ipc ]; do sleep 2; done
 echo "--> IPC available."
 sleep 2
 # And then run the Solidity unit-tests (once without optimization, once with),
 # pointing to that IPC endpoint.
 echo "--> Running tests without optimizer..."
-  "$REPO_ROOT"/build/test/soltest --show-progress -- --ipcpath /tmp/test/geth.ipc && \
+  "$REPO_ROOT"/build/test/soltest --show-progress -- --ipcpath /tmp/test/gvap.ipc && \
   echo "--> Running tests WITH optimizer..." && \
-  "$REPO_ROOT"/build/test/soltest --show-progress -- --optimize --ipcpath /tmp/test/geth.ipc
+  "$REPO_ROOT"/build/test/soltest --show-progress -- --optimize --ipcpath /tmp/test/gvap.ipc
 ERROR_CODE=$?
-pkill "$ETH_PID" || true
+pkill "$VAP_PID" || true
 sleep 4
-pgrep "$ETH_PID" && pkill -9 "$ETH_PID" || true
+pgrep "$VAP_PID" && pkill -9 "$VAP_PID" || true
 exit $ERROR_CODE

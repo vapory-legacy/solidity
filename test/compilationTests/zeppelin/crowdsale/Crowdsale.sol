@@ -8,7 +8,7 @@ import '../math/SafeMath.sol';
  * @dev Crowdsale is a base contract for managing a token crowdsale.
  * Crowdsales have a start and end block, where investors can make
  * token purchases and the crowdsale will assign them tokens based
- * on a token per ETH rate. Funds collected are forwarded to a wallet 
+ * on a token per VAP rate. Funds collected are forwarded to a wallet 
  * as they arrive.
  */
 contract Crowdsale {
@@ -85,7 +85,7 @@ contract Crowdsale {
     forwardFunds();
   }
 
-  // send ether to the fund collection wallet
+  // send vapor to the fund collection wallet
   // override to create custom fund forwarding mechanisms
   function forwardFunds() internal {
     wallet.transfer(msg.value);

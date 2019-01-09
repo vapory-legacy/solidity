@@ -525,7 +525,7 @@ void AsmAnalyzer::warnOnInstructions(solidity::Instruction _instr, SourceLocatio
 	if (_instr == solidity::Instruction::JUMP || _instr == solidity::Instruction::JUMPI)
 		m_errorReporter.warning(
 			_location,
-			"Jump instructions are low-level EVM features that can lead to "
+			"Jump instructions are low-level VVM features that can lead to "
 			"incorrect stack access. Because of that they are discouraged. "
 			"Please consider using \"switch\" or \"for\" statements instead."
 		);

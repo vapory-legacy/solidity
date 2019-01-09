@@ -25,10 +25,10 @@
 
 namespace dev
 {
-namespace eth
+namespace vap
 {
 
-/// Compile a Low-level Lisp-like Language program into EVM-code.
+/// Compile a Low-level Lisp-like Language program into VVM-code.
 class CompilerException: public dev::Exception {};
 class InvalidOperation: public CompilerException {};
 class IntegerOutOfRange: public CompilerException {};

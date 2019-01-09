@@ -103,14 +103,14 @@ public:
 
 	static RPCSession& instance(std::string const& _path);
 
-	std::string eth_getCode(std::string const& _address, std::string const& _blockNumber);
-	Json::Value eth_getBlockByNumber(std::string const& _blockNumber, bool _fullObjects);
-	std::string eth_call(TransactionData const& _td, std::string const& _blockNumber);
-	TransactionReceipt eth_getTransactionReceipt(std::string const& _transactionHash);
-	std::string eth_sendTransaction(TransactionData const& _td);
-	std::string eth_sendTransaction(std::string const& _transaction);
-	std::string eth_getBalance(std::string const& _address, std::string const& _blockNumber);
-	std::string eth_getStorageRoot(std::string const& _address, std::string const& _blockNumber);
+	std::string vap_getCode(std::string const& _address, std::string const& _blockNumber);
+	Json::Value vap_getBlockByNumber(std::string const& _blockNumber, bool _fullObjects);
+	std::string vap_call(TransactionData const& _td, std::string const& _blockNumber);
+	TransactionReceipt vap_getTransactionReceipt(std::string const& _transactionHash);
+	std::string vap_sendTransaction(TransactionData const& _td);
+	std::string vap_sendTransaction(std::string const& _transaction);
+	std::string vap_getBalance(std::string const& _address, std::string const& _blockNumber);
+	std::string vap_getStorageRoot(std::string const& _address, std::string const& _blockNumber);
 	std::string personal_newAccount(std::string const& _password);
 	void personal_unlockAccount(std::string const& _address, std::string const& _password, int _duration);
 	void test_setChainParams(std::vector<std::string> const& _accounts);

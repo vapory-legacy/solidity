@@ -17,14 +17,14 @@
 /**
  * @author Lefteris Karapetsas <lefteris@ethdev.com>
  * @date 2015
- * Unit tests for Assembly Items from evmasm/Assembly.h
+ * Unit tests for Assembly Items from vvmasm/Assembly.h
  */
 
 #include <string>
 #include <iostream>
 #include <boost/test/unit_test.hpp>
-#include <libevmasm/SourceLocation.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/SourceLocation.h>
+#include <libvvmasm/Assembly.h>
 #include <libsolidity/parsing/Scanner.h>
 #include <libsolidity/parsing/Parser.h>
 #include <libsolidity/analysis/NameAndTypeResolver.h>
@@ -34,7 +34,7 @@
 #include <libsolidity/interface/ErrorReporter.h>
 
 using namespace std;
-using namespace dev::eth;
+using namespace dev::vap;
 
 namespace dev
 {
@@ -46,7 +46,7 @@ namespace test
 namespace
 {
 
-eth::AssemblyItems compileContract(const string& _sourceCode)
+vap::AssemblyItems compileContract(const string& _sourceCode)
 {
 	ErrorList errors;
 	ErrorReporter errorReporter(errors);

@@ -18,8 +18,8 @@
  * Executable for use with AFL <http://lcamtuf.coredump.cx/afl>.
  */
 
-#include <libevmasm/Assembly.h>
-#include <libevmasm/ConstantOptimiser.h>
+#include <libvvmasm/Assembly.h>
+#include <libvvmasm/ConstantOptimiser.h>
 #include <solc/jsonCompiler.h>
 
 #include <json/json.h>
@@ -31,7 +31,7 @@
 
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 namespace po = boost::program_options;
 
 namespace

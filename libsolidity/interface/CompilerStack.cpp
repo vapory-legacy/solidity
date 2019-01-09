@@ -43,7 +43,7 @@
 #include <libsolidity/interface/Natspec.h>
 #include <libsolidity/interface/GasEstimator.h>
 
-#include <libevmasm/Exceptions.h>
+#include <libvvmasm/Exceptions.h>
 
 #include <libdevcore/SwarmHash.h>
 #include <libdevcore/JSON.h>
@@ -266,7 +266,7 @@ bool CompilerStack::compile()
 		if (!parseAndAnalyze())
 			return false;
 
-	map<ContractDefinition const*, eth::Assembly const*> compiledContracts;
+	map<ContractDefinition const*, vap::Assembly const*> compiledContracts;
 	for (Source const* source: m_sourceOrder)
 		for (ASTPointer<ASTNode> const& node: source->ast->nodes())
 			if (auto contract = dynamic_cast<ContractDefinition const*>(node.get()))
@@ -297,13 +297,13 @@ vector<string> CompilerStack::contractNames() const
 	return contractNames;
 }
 
-eth::AssemblyItems const* CompilerStack::assemblyItems(string const& _contractName) const
+vap::AssemblyItems const* CompilerStack::assemblyItems(string const& _contractName) const
 {
 	Contract const& currentContract = contract(_contractName);
 	return currentContract.compiler ? &contract(_contractName).compiler->assemblyItems() : nullptr;
 }
 
-eth::AssemblyItems const* CompilerStack::runtimeAssemblyItems(string const& _contractName) const
+vap::AssemblyItems const* CompilerStack::runtimeAssemblyItems(string const& _contractName) const
 {
 	Contract const& currentContract = contract(_contractName);
 	return currentContract.compiler ? &contract(_contractName).compiler->runtimeAssemblyItems() : nullptr;
@@ -352,17 +352,17 @@ std::string const CompilerStack::filesystemFriendlyName(string const& _contractN
 	return matchContract.contract->name();
 }
 
-eth::LinkerObject const& CompilerStack::object(string const& _contractName) const
+vap::LinkerObject const& CompilerStack::object(string const& _contractName) const
 {
 	return contract(_contractName).object;
 }
 
-eth::LinkerObject const& CompilerStack::runtimeObject(string const& _contractName) const
+vap::LinkerObject const& CompilerStack::runtimeObject(string const& _contractName) const
 {
 	return contract(_contractName).runtimeObject;
 }
 
-eth::LinkerObject const& CompilerStack::cloneObject(string const& _contractName) const
+vap::LinkerObject const& CompilerStack::cloneObject(string const& _contractName) const
 {
 	return contract(_contractName).cloneObject;
 }
@@ -509,12 +509,12 @@ size_t CompilerStack::functionEntryPoint(
 	shared_ptr<Compiler> const& compiler = contract(_contractName).compiler;
 	if (!compiler)
 		return 0;
-	eth::AssemblyItem tag = compiler->functionEntryLabel(_function);
-	if (tag.type() == eth::UndefinedItem)
+	vap::AssemblyItem tag = compiler->functionEntryLabel(_function);
+	if (tag.type() == vap::UndefinedItem)
 		return 0;
-	eth::AssemblyItems const& items = compiler->runtimeAssemblyItems();
+	vap::AssemblyItems const& items = compiler->runtimeAssemblyItems();
 	for (size_t i = 0; i < items.size(); ++i)
-		if (items.at(i).type() == eth::Tag && items.at(i).data() == tag.data())
+		if (items.at(i).type() == vap::Tag && items.at(i).data() == tag.data())
 			return i;
 	return 0;
 }
@@ -665,7 +665,7 @@ bool onlySafeExperimentalFeaturesActivated(set<ExperimentalFeature> const& featu
 
 void CompilerStack::compileContract(
 	ContractDefinition const& _contract,
-	map<ContractDefinition const*, eth::Assembly const*>& _compiledContracts
+	map<ContractDefinition const*, vap::Assembly const*>& _compiledContracts
 )
 {
 	if (
@@ -707,11 +707,11 @@ void CompilerStack::compileContract(
 	{
 		compiledContract.object = compiler->assembledObject();
 	}
-	catch(eth::OptimizerException const&)
+	catch(vap::OptimizerException const&)
 	{
 		solAssert(false, "Assembly optimizer exception for bytecode");
 	}
-	catch(eth::AssemblyException const&)
+	catch(vap::AssemblyException const&)
 	{
 		solAssert(false, "Assembly exception for bytecode");
 	}
@@ -720,11 +720,11 @@ void CompilerStack::compileContract(
 	{
 		compiledContract.runtimeObject = compiler->runtimeObject();
 	}
-	catch(eth::OptimizerException const&)
+	catch(vap::OptimizerException const&)
 	{
 		solAssert(false, "Assembly optimizer exception for deployed bytecode");
 	}
-	catch(eth::AssemblyException const&)
+	catch(vap::AssemblyException const&)
 	{
 		solAssert(false, "Assembly exception for deployed bytecode");
 	}
@@ -738,7 +738,7 @@ void CompilerStack::compileContract(
 		cloneCompiler.compileClone(_contract, _compiledContracts);
 		compiledContract.cloneObject = cloneCompiler.assembledObject();
 	}
-	catch (eth::AssemblyException const&)
+	catch (vap::AssemblyException const&)
 	{
 		// In some cases (if the constructor requests a runtime function), it is not
 		// possible to compile the clone.
@@ -856,7 +856,7 @@ string CompilerStack::createMetadata(Contract const& _contract) const
 	return jsonCompactPrint(meta);
 }
 
-string CompilerStack::computeSourceMapping(eth::AssemblyItems const& _items) const
+string CompilerStack::computeSourceMapping(vap::AssemblyItems const& _items) const
 {
 	string ret;
 	map<string, unsigned> sourceIndicesMap = sourceIndices();
@@ -876,9 +876,9 @@ string CompilerStack::computeSourceMapping(eth::AssemblyItems const& _items) con
 			sourceIndicesMap.at(*location.sourceName) :
 			-1;
 		char jump = '-';
-		if (item.getJumpType() == eth::AssemblyItem::JumpType::IntoFunction)
+		if (item.getJumpType() == vap::AssemblyItem::JumpType::IntoFunction)
 			jump = 'i';
-		else if (item.getJumpType() == eth::AssemblyItem::JumpType::OutOfFunction)
+		else if (item.getJumpType() == vap::AssemblyItem::JumpType::OutOfFunction)
 			jump = 'o';
 
 		unsigned components = 4;
@@ -950,11 +950,11 @@ Json::Value CompilerStack::gasEstimates(string const& _contractName) const
 	using Gas = GasEstimator::GasConsumption;
 	Json::Value output(Json::objectValue);
 
-	if (eth::AssemblyItems const* items = assemblyItems(_contractName))
+	if (vap::AssemblyItems const* items = assemblyItems(_contractName))
 	{
 		Gas executionGas = GasEstimator::functionalEstimation(*items);
 		u256 bytecodeSize(runtimeObject(_contractName).bytecode.size());
-		Gas codeDepositGas = bytecodeSize * eth::GasCosts::createDataGas;
+		Gas codeDepositGas = bytecodeSize * vap::GasCosts::createDataGas;
 
 		Json::Value creation(Json::objectValue);
 		creation["codeDepositCost"] = gasToJson(codeDepositGas);
@@ -965,7 +965,7 @@ Json::Value CompilerStack::gasEstimates(string const& _contractName) const
 		output["creation"] = creation;
 	}
 
-	if (eth::AssemblyItems const* items = runtimeAssemblyItems(_contractName))
+	if (vap::AssemblyItems const* items = runtimeAssemblyItems(_contractName))
 	{
 		/// External functions
 		ContractDefinition const& contract = contractDefinition(_contractName);

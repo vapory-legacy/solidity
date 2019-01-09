@@ -30,7 +30,7 @@ namespace dev
 namespace solidity
 {
 
-// How a function can mutate the EVM state.
+// How a function can mutate the VVM state.
 enum class StateMutability { Pure, View, NonPayable, Payable };
 
 inline std::string stateMutabilityToString(StateMutability const& _stateMutability)

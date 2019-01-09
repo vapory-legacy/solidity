@@ -38,11 +38,11 @@ pragmas are instructions for the compiler about how to treat the
 source code (e.g. `pragma once <https://en.wikipedia.org/wiki/Pragma_once>`_).
 
 A contract in the sense of Solidity is a collection of code (its *functions*) and
-data (its *state*) that resides at a specific address on the Ethereum
+data (its *state*) that resides at a specific address on the Vapory
 blockchain. The line ``uint storedData;`` declares a state variable called ``storedData`` of
 type ``uint`` (unsigned integer of 256 bits). You can think of it as a single slot
 in a database that can be queried and altered by calling functions of the
-code that manages the database. In the case of Ethereum, this is always the owning
+code that manages the database. In the case of Vapory, this is always the owning
 contract. And in this case, the functions ``set`` and ``get`` can be used to modify
 or retrieve the value of the variable.
 
@@ -50,7 +50,7 @@ To access a state variable, you do not need the prefix ``this.`` as is common in
 other languages.
 
 This contract does not do much yet (due to the infrastructure
-built by Ethereum) apart from allowing anyone to store a single number that is accessible by
+built by Vapory) apart from allowing anyone to store a single number that is accessible by
 anyone in the world without a (feasible) way to prevent you from publishing
 this number. Of course, anyone could just call ``set`` again with a different value
 and overwrite your number, but the number will still be stored in the history
@@ -75,7 +75,7 @@ cryptocurrency. It is possible to generate coins out of thin air, but
 only the person that created the contract will be able to do that (it is trivial
 to implement a different issuance scheme).
 Furthermore, anyone can send coins to each other without any need for
-registering with username and password - all you need is an Ethereum keypair.
+registering with username and password - all you need is an Vapory keypair.
 
 
 ::
@@ -250,7 +250,7 @@ be rejected and not become part of the block.
 
 These blocks form a linear sequence in time and that is where the word "blockchain"
 derives from. Blocks are added to the chain in rather regular intervals - for
-Ethereum this is roughly every 17 seconds.
+Vapory this is roughly every 17 seconds.
 
 As part of the "order selection mechanism" (which is called "mining") it may happen that
 blocks are reverted from time to time, but only at the "tip" of the chain. The more
@@ -259,21 +259,21 @@ are reverted and even removed from the blockchain, but the longer you wait, the 
 likely it will be.
 
 
-.. _the-ethereum-virtual-machine:
+.. _the-vapory-virtual-machine:
 
-.. index:: !evm, ! ethereum virtual machine
+.. index:: !vvm, ! vapory virtual machine
 
 ****************************
-The Ethereum Virtual Machine
+The Vapory Virtual Machine
 ****************************
 
 Overview
 ========
 
-The Ethereum Virtual Machine or EVM is the runtime environment
-for smart contracts in Ethereum. It is not only sandboxed but
+The Vapory Virtual Machine or VVM is the runtime environment
+for smart contracts in Vapory. It is not only sandboxed but
 actually completely isolated, which means that code running
-inside the EVM has no access to network, filesystem or other processes.
+inside the VVM has no access to network, filesystem or other processes.
 Smart contracts even have limited access to other smart contracts.
 
 .. index:: ! account, address, storage, balance
@@ -281,7 +281,7 @@ Smart contracts even have limited access to other smart contracts.
 Accounts
 ========
 
-There are two kinds of accounts in Ethereum which share the same
+There are two kinds of accounts in Vapory which share the same
 address space: **External accounts** that are controlled by
 public-private key pairs (i.e. humans) and **contract accounts** which are
 controlled by the code stored together with the account.
@@ -293,14 +293,14 @@ determined at the time the contract is created
 of transactions sent from that address, the so-called "nonce").
 
 Regardless of whether or not the account stores code, the two types are
-treated equally by the EVM.
+treated equally by the VVM.
 
 Every account has a persistent key-value store mapping 256-bit words to 256-bit
 words called **storage**.
 
 Furthermore, every account has a **balance** in
-Ether (in "Wei" to be exact) which can be modified by sending transactions that
-include Ether.
+Vapor (in "Wei" to be exact) which can be modified by sending transactions that
+include Vapor.
 
 .. index:: ! transaction
 
@@ -309,7 +309,7 @@ Transactions
 
 A transaction is a message that is sent from one account to another
 account (which might be the same or the special zero-account, see below).
-It can include binary data (its payload) and Ether.
+It can include binary data (its payload) and Vapor.
 
 If the target account contains code, that code is executed and
 the payload is provided as input data.
@@ -320,7 +320,7 @@ As already mentioned, the address of that contract is not
 the zero address but an address derived from the sender and
 its number of transactions sent (the "nonce"). The payload
 of such a contract creation transaction is taken to be
-EVM bytecode and executed. The output of this execution is
+VVM bytecode and executed. The output of this execution is
 permanently stored as the code of the contract.
 This means that in order to create a contract, you do not
 send the actual code of the contract, but in fact code that
@@ -333,7 +333,7 @@ Gas
 
 Upon creation, each transaction is charged with a certain amount of **gas**,
 whose purpose is to limit the amount of work that is needed to execute
-the transaction and to pay for this execution. While the EVM executes the
+the transaction and to pay for this execution. While the VVM executes the
 transaction, the gas is gradually depleted according to specific rules.
 
 The **gas price** is a value set by the creator of the transaction, who
@@ -364,7 +364,7 @@ accessing (either reading or writing) a previously untouched memory word (ie. an
 within a word). At the time of expansion, the cost in gas must be paid. Memory is more
 costly the larger it grows (it scales quadratically).
 
-The EVM is not a register machine but a stack machine, so all
+The VVM is not a register machine but a stack machine, so all
 computations are performed on an area called the **stack**. It has a maximum size of
 1024 elements and contains words of 256 bits. Access to the stack is
 limited to the top end in the following way:
@@ -382,7 +382,7 @@ without first removing the top of the stack.
 Instruction Set
 ===============
 
-The instruction set of the EVM is kept minimal in order to avoid
+The instruction set of the VVM is kept minimal in order to avoid
 incorrect implementations which could cause consensus problems.
 All instructions operate on the basic data type, 256-bit words.
 The usual arithmetic, bit, logical and comparison operations are present.
@@ -395,10 +395,10 @@ like its number and timestamp.
 Message Calls
 =============
 
-Contracts can call other contracts or send Ether to non-contract
+Contracts can call other contracts or send Vapor to non-contract
 accounts by the means of message calls. Message calls are similar
 to transactions, in that they have a source, a target, data payload,
-Ether, gas and return data. In fact, every transaction consists of
+Vapor, gas and return data. In fact, every transaction consists of
 a top-level message call which in turn can create further message calls.
 
 A contract can decide how much of its remaining **gas** should be sent
@@ -469,13 +469,13 @@ Self-destruct
 
 The only possibility that code is removed from the blockchain is
 when a contract at that address performs the ``selfdestruct`` operation.
-The remaining Ether stored at that address is sent to a designated
+The remaining Vapor stored at that address is sent to a designated
 target and then the storage and code is removed from the state.
 
 .. warning:: Even if a contract's code does not contain a call to ``selfdestruct``,
   it can still perform that operation using ``delegatecall`` or ``callcode``.
 
-.. note:: The pruning of old contracts may or may not be implemented by Ethereum
+.. note:: The pruning of old contracts may or may not be implemented by Vapory
   clients. Additionally, archive nodes could choose to keep the contract storage
   and code indefinitely.
 

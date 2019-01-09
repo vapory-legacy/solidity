@@ -27,9 +27,9 @@
 #include <libsolidity/codegen/ExpressionCompiler.h>
 #include <libsolidity/codegen/CompilerUtils.h>
 
-#include <libevmasm/Instruction.h>
-#include <libevmasm/Assembly.h>
-#include <libevmasm/GasMeter.h>
+#include <libvvmasm/Instruction.h>
+#include <libvvmasm/Assembly.h>
+#include <libvvmasm/GasMeter.h>
 
 #include <boost/range/adaptor/reversed.hpp>
 
@@ -60,7 +60,7 @@ private:
 
 void ContractCompiler::compileContract(
 	ContractDefinition const& _contract,
-	std::map<const ContractDefinition*, eth::Assembly const*> const& _contracts
+	std::map<const ContractDefinition*, vap::Assembly const*> const& _contracts
 )
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _contract);
@@ -71,7 +71,7 @@ void ContractCompiler::compileContract(
 
 size_t ContractCompiler::compileConstructor(
 	ContractDefinition const& _contract,
-	std::map<const ContractDefinition*, eth::Assembly const*> const& _contracts
+	std::map<const ContractDefinition*, vap::Assembly const*> const& _contracts
 )
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _contract);
@@ -81,7 +81,7 @@ size_t ContractCompiler::compileConstructor(
 
 size_t ContractCompiler::compileClone(
 	ContractDefinition const& _contract,
-	map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+	map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 )
 {
 	initializeContext(_contract, _contracts);
@@ -102,7 +102,7 @@ size_t ContractCompiler::compileClone(
 
 void ContractCompiler::initializeContext(
 	ContractDefinition const& _contract,
-	map<ContractDefinition const*, eth::Assembly const*> const& _compiledContracts
+	map<ContractDefinition const*, vap::Assembly const*> const& _compiledContracts
 )
 {
 	m_context.setExperimentalFeatures(_contract.sourceUnit().annotation().experimentalFeatures);
@@ -115,7 +115,7 @@ void ContractCompiler::initializeContext(
 
 void ContractCompiler::appendCallValueCheck()
 {
-	// Throw if function is not payable but call contained ether.
+	// Throw if function is not payable but call contained vapor.
 	m_context << Instruction::CALLVALUE;
 	m_context.appendConditionalRevert();
 }
@@ -168,7 +168,7 @@ size_t ContractCompiler::packIntoContractCreator(ContractDefinition const& _cont
 
 	// We jump to the deploy routine because we first have to append all missing functions,
 	// which can cause further functions to be added to the runtime context.
-	eth::AssemblyItem deployRoutine = m_context.appendJumpToNew();
+	vap::AssemblyItem deployRoutine = m_context.appendJumpToNew();
 
 	// We have to include copies of functions in the construction time and runtime context
 	// because of absolute jumps.
@@ -247,10 +247,10 @@ void ContractCompiler::appendConstructor(FunctionDefinition const& _constructor)
 void ContractCompiler::appendFunctionSelector(ContractDefinition const& _contract)
 {
 	map<FixedHash<4>, FunctionTypePointer> interfaceFunctions = _contract.interfaceFunctions();
-	map<FixedHash<4>, const eth::AssemblyItem> callDataUnpackerEntryPoints;
+	map<FixedHash<4>, const vap::AssemblyItem> callDataUnpackerEntryPoints;
 
 	FunctionDefinition const* fallback = _contract.fallbackFunction();
-	eth::AssemblyItem notFound = m_context.newTag();
+	vap::AssemblyItem notFound = m_context.newTag();
 	// directly jump to fallback if the data is too short to contain a function selector
 	// also guards against short data
 	m_context << u256(4) << Instruction::CALLDATASIZE << Instruction::LT;
@@ -298,7 +298,7 @@ void ContractCompiler::appendFunctionSelector(ContractDefinition const& _contrac
 			appendCallValueCheck();
 
 		// Return tag is used to jump out of the function.
-		eth::AssemblyItem returnTag = m_context.pushNewTag();
+		vap::AssemblyItem returnTag = m_context.pushNewTag();
 		if (!functionType->parameterTypes().empty())
 		{
 			// Parameter for calldataUnpacker
@@ -547,7 +547,7 @@ bool ContractCompiler::visit(FunctionDefinition const& _function)
 
 	/// The constructor and the fallback function doesn't to jump out.
 	if (!_function.isConstructor() && !_function.isFallback())
-		m_context.appendJump(eth::AssemblyItem::JumpType::OutOfFunction);
+		m_context.appendJump(vap::AssemblyItem::JumpType::OutOfFunction);
 	return false;
 }
 
@@ -690,8 +690,8 @@ bool ContractCompiler::visit(IfStatement const& _ifStatement)
 	CompilerContext::LocationSetter locationSetter(m_context, _ifStatement);
 	compileExpression(_ifStatement.condition());
 	m_context << Instruction::ISZERO;
-	eth::AssemblyItem falseTag = m_context.appendConditionalJump();
-	eth::AssemblyItem endTag = falseTag;
+	vap::AssemblyItem falseTag = m_context.appendConditionalJump();
+	vap::AssemblyItem endTag = falseTag;
 	_ifStatement.trueStatement().accept(*this);
 	if (_ifStatement.falseStatement())
 	{
@@ -709,8 +709,8 @@ bool ContractCompiler::visit(WhileStatement const& _whileStatement)
 {
 	StackHeightChecker checker(m_context);
 	CompilerContext::LocationSetter locationSetter(m_context, _whileStatement);
-	eth::AssemblyItem loopStart = m_context.newTag();
-	eth::AssemblyItem loopEnd = m_context.newTag();
+	vap::AssemblyItem loopStart = m_context.newTag();
+	vap::AssemblyItem loopEnd = m_context.newTag();
 	m_continueTags.push_back(loopStart);
 	m_breakTags.push_back(loopEnd);
 
@@ -748,9 +748,9 @@ bool ContractCompiler::visit(ForStatement const& _forStatement)
 {
 	StackHeightChecker checker(m_context);
 	CompilerContext::LocationSetter locationSetter(m_context, _forStatement);
-	eth::AssemblyItem loopStart = m_context.newTag();
-	eth::AssemblyItem loopEnd = m_context.newTag();
-	eth::AssemblyItem loopNext = m_context.newTag();
+	vap::AssemblyItem loopStart = m_context.newTag();
+	vap::AssemblyItem loopEnd = m_context.newTag();
+	vap::AssemblyItem loopNext = m_context.newTag();
 	m_continueTags.push_back(loopNext);
 	m_breakTags.push_back(loopEnd);
 
@@ -985,9 +985,9 @@ void ContractCompiler::compileExpression(Expression const& _expression, TypePoin
 		CompilerUtils(m_context).convertType(*_expression.annotation().type, *_targetType);
 }
 
-eth::AssemblyPointer ContractCompiler::cloneRuntime()
+vap::AssemblyPointer ContractCompiler::cloneRuntime()
 {
-	eth::Assembly a;
+	vap::Assembly a;
 	a << Instruction::CALLDATASIZE;
 	a << u256(0) << Instruction::DUP1 << Instruction::CALLDATACOPY;
 	//@todo adjust for larger return values, make this dynamic.
@@ -996,14 +996,14 @@ eth::AssemblyPointer ContractCompiler::cloneRuntime()
 	// this is the address which has to be substituted by the linker.
 	//@todo implement as special "marker" AssemblyItem.
 	a << u256("0xcafecafecafecafecafecafecafecafecafecafe");
-	a << u256(eth::GasCosts::callGas + 10) << Instruction::GAS << Instruction::SUB;
+	a << u256(vap::GasCosts::callGas + 10) << Instruction::GAS << Instruction::SUB;
 	a << Instruction::DELEGATECALL;
 	//Propagate error condition (if DELEGATECALL pushes 0 on stack).
 	a << Instruction::ISZERO;
 	a << Instruction::ISZERO;
-	eth::AssemblyItem afterTag = a.appendJumpI().tag();
+	vap::AssemblyItem afterTag = a.appendJumpI().tag();
 	a << Instruction::INVALID << afterTag;
 	//@todo adjust for larger return values, make this dynamic.
 	a << u256(0x20) << u256(0) << Instruction::RETURN;
-	return make_shared<eth::Assembly>(a);
+	return make_shared<vap::Assembly>(a);
 }

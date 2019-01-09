@@ -24,8 +24,8 @@
 
 #include <libsolidity/inlineasm/AsmDataForward.h>
 
-#include <libevmasm/Instruction.h>
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/Instruction.h>
+#include <libvvmasm/SourceLocation.h>
 
 #include <boost/variant.hpp>
 
@@ -41,7 +41,7 @@ using Type = std::string;
 struct TypedName { SourceLocation location; std::string name; Type type; };
 using TypedNameList = std::vector<TypedName>;
 
-/// Direct EVM instruction (except PUSHi and JUMPDEST)
+/// Direct VVM instruction (except PUSHi and JUMPDEST)
 struct Instruction { SourceLocation location; solidity::Instruction instruction; };
 /// Literal number or string (up to 32 bytes)
 enum class LiteralKind { Number, Boolean, String };

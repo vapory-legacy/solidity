@@ -28,7 +28,7 @@
 
 namespace dev
 {
-namespace eth
+namespace vap
 {
 class Assembly;
 }
@@ -45,7 +45,7 @@ public:
 	static void assemble(
 		Block const& _parsedData,
 		AsmAnalysisInfo& _analysisInfo,
-		eth::Assembly& _assembly,
+		vap::Assembly& _assembly,
 		julia::ExternalIdentifierAccess const& _identifierAccess = julia::ExternalIdentifierAccess(),
 		bool _useNamedLabelsForFunctions = false
 	);

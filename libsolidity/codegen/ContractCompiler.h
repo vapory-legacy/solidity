@@ -26,7 +26,7 @@
 #include <functional>
 #include <libsolidity/ast/ASTVisitor.h>
 #include <libsolidity/codegen/CompilerContext.h>
-#include <libevmasm/Assembly.h>
+#include <libvvmasm/Assembly.h>
 
 namespace dev {
 namespace solidity {
@@ -48,20 +48,20 @@ public:
 
 	void compileContract(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 	);
 	/// Compiles the constructor part of the contract.
 	/// @returns the identifier of the runtime sub-assembly.
 	size_t compileConstructor(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 	);
 	/// Compiles a contract that uses DELEGATECALL to call into a pre-deployed version of the given
 	/// contract at runtime, but contains the full creation-time code.
 	/// @returns the identifier of the runtime sub-assembly.
 	size_t compileClone(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _contracts
 	);
 
 private:
@@ -69,7 +69,7 @@ private:
 	/// information about the contract like the AST annotations.
 	void initializeContext(
 		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _compiledContracts
+		std::map<ContractDefinition const*, vap::Assembly const*> const& _compiledContracts
 	);
 	/// Adds the code that is run at creation time. Should be run after exchanging the run-time context
 	/// with a new and initialized context. Adds the constructor code.
@@ -115,16 +115,16 @@ private:
 	void compileExpression(Expression const& _expression, TypePointer const& _targetType = TypePointer());
 
 	/// @returns the runtime assembly for clone contracts.
-	static eth::AssemblyPointer cloneRuntime();
+	static vap::AssemblyPointer cloneRuntime();
 
 	bool const m_optimise;
 	/// Pointer to the runtime compiler in case this is a creation compiler.
 	ContractCompiler* m_runtimeCompiler = nullptr;
 	CompilerContext& m_context;
-	std::vector<eth::AssemblyItem> m_breakTags; ///< tag to jump to for a "break" statement
-	std::vector<eth::AssemblyItem> m_continueTags; ///< tag to jump to for a "continue" statement
+	std::vector<vap::AssemblyItem> m_breakTags; ///< tag to jump to for a "break" statement
+	std::vector<vap::AssemblyItem> m_continueTags; ///< tag to jump to for a "continue" statement
 	/// Tag to jump to for a "return" statement, needs to be stacked because of modifiers.
-	std::vector<eth::AssemblyItem> m_returnTags;
+	std::vector<vap::AssemblyItem> m_returnTags;
 	unsigned m_modifierDepth = 0;
 	FunctionDefinition const* m_currentFunction = nullptr;
 	unsigned m_stackCleanupForReturn = 0; ///< this number of stack elements need to be removed before jump to m_returnTag

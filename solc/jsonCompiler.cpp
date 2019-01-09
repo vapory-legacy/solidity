@@ -205,14 +205,14 @@ string compile(StringMap const& _sources, bool _optimize, CStyleReadFileCallback
 				Json::Value contractOutput = Json::objectValue;
 				contractOutput["interface"] = dev::jsonCompactPrint(contractInput["abi"]);
 				contractOutput["metadata"] = contractInput["metadata"];
-				contractOutput["functionHashes"] = contractInput["evm"]["methodIdentifiers"];
-				contractOutput["gasEstimates"] = translateGasEstimates(contractInput["evm"]["gasEstimates"]);
-				contractOutput["assembly"] = contractInput["evm"]["legacyAssembly"];
-				contractOutput["bytecode"] = contractInput["evm"]["bytecode"]["object"];
-				contractOutput["opcodes"] = contractInput["evm"]["bytecode"]["opcodes"];
-				contractOutput["srcmap"] = contractInput["evm"]["bytecode"]["sourceMap"];
-				contractOutput["runtimeBytecode"] = contractInput["evm"]["deployedBytecode"]["object"];
-				contractOutput["srcmapRuntime"] = contractInput["evm"]["deployedBytecode"]["sourceMap"];
+				contractOutput["functionHashes"] = contractInput["vvm"]["methodIdentifiers"];
+				contractOutput["gasEstimates"] = translateGasEstimates(contractInput["vvm"]["gasEstimates"]);
+				contractOutput["assembly"] = contractInput["vvm"]["legacyAssembly"];
+				contractOutput["bytecode"] = contractInput["vvm"]["bytecode"]["object"];
+				contractOutput["opcodes"] = contractInput["vvm"]["bytecode"]["opcodes"];
+				contractOutput["srcmap"] = contractInput["vvm"]["bytecode"]["sourceMap"];
+				contractOutput["runtimeBytecode"] = contractInput["vvm"]["deployedBytecode"]["object"];
+				contractOutput["srcmapRuntime"] = contractInput["vvm"]["deployedBytecode"]["sourceMap"];
 				output["contracts"][sourceName + ":" + contractName] = contractOutput;
 			}
 	}

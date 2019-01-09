@@ -45,7 +45,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif // defined(__GNUC__)
 
-// See https://github.com/ethereum/libweb3core/commit/90680a8c25bfb48b24371b4abcacde56c181517c
+// See https://github.com/vaporyco/libweb3core/commit/90680a8c25bfb48b24371b4abcacde56c181517c
 // See https://svn.boost.org/trac/boost/ticket/11328
 // Bob comment - perhaps we should just HARD FAIL here with Boost-1.58.00?
 // It is quite old now, and requiring end-users to use a newer Boost release is probably not unreasonable.

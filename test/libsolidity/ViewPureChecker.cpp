@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(assembly_jump)
 			}
 		}
 	)";
-	CHECK_WARNING(text, "low-level EVM features");
+	CHECK_WARNING(text, "low-level VVM features");
 }
 
 BOOST_AUTO_TEST_CASE(constant)

@@ -22,7 +22,7 @@
 
 #include <libsolidity/codegen/CompilerUtils.h>
 #include <libsolidity/ast/AST.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <libsolidity/codegen/ArrayUtils.h>
 #include <libsolidity/codegen/LValue.h>
 #include <libsolidity/codegen/ABIFunctions.h>

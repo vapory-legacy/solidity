@@ -39,13 +39,13 @@ namespace
 
 bool successParse(std::string const& _source)
 {
-	std::string ret = eth::parseLLL(_source);
+	std::string ret = vap::parseLLL(_source);
 	return ret.size() != 0;
 }
 
 std::string parse(std::string const& _source)
 {
-	return eth::parseLLL(_source);
+	return vap::parseLLL(_source);
 }
 
 }

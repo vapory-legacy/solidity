@@ -75,7 +75,7 @@ Throw = 'throw'
 VariableDefinition = ('var' IdentifierList | VariableDeclaration) ( '=' Expression )?
 IdentifierList = '(' ( Identifier? ',' )* Identifier? ')'
 
-// Precedence by order (see github.com/ethereum/solidity/pull/732)
+// Precedence by order (see github.com/vaporyco/solidity/pull/732)
 Expression
   = Expression ('++' | '--')
   | NewExpression
@@ -120,7 +120,7 @@ IndexAccess = Expression '[' Expression? ']'
 
 BooleanLiteral = 'true' | 'false'
 NumberLiteral = ( HexNumber | DecimalNumber ) (' ' NumberUnit)?
-NumberUnit = 'wei' | 'szabo' | 'finney' | 'ether'
+NumberUnit = 'wei' | 'szabo' | 'finney' | 'vapor'
            | 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'years'
 HexLiteral = 'hex' ('"' ([0-9a-fA-F]{2})* '"' | '\'' ([0-9a-fA-F]{2})* '\'')
 StringLiteral = '"' ([^"\r\n\\] | '\\' .)* '"'

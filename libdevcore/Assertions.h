@@ -30,11 +30,11 @@ namespace dev
 {
 
 #if defined(_MSC_VER)
-#define ETH_FUNC __FUNCSIG__
+#define VAP_FUNC __FUNCSIG__
 #elif defined(__GNUC__)
-#define ETH_FUNC __PRETTY_FUNCTION__
+#define VAP_FUNC __PRETTY_FUNCTION__
 #else
-#define ETH_FUNC __func__
+#define VAP_FUNC __func__
 #endif
 
 /// Assertion that throws an exception containing the given description if it is not met.
@@ -47,7 +47,7 @@ namespace dev
 			::boost::throw_exception( \
 				_ExceptionType() << \
 				::dev::errinfo_comment(_description) << \
-				::boost::throw_function(ETH_FUNC) << \
+				::boost::throw_function(VAP_FUNC) << \
 				::boost::throw_file(__FILE__) << \
 				::boost::throw_line(__LINE__) \
 			); \

@@ -23,7 +23,7 @@
 #include <libsolidity/interface/StandardCompiler.h>
 #include <libsolidity/interface/SourceReferenceFormatter.h>
 #include <libsolidity/ast/ASTJsonConverter.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include <libdevcore/JSON.h>
 #include <libdevcore/SHA3.h>
 
@@ -134,7 +134,7 @@ StringMap createSourceList(Json::Value const& _input)
 bool isArtifactRequested(Json::Value const& _outputSelection, string const& _artifact)
 {
 	for (auto const& artifact: _outputSelection)
-		/// @TODO support sub-matching, e.g "evm" matches "evm.assembly"
+		/// @TODO support sub-matching, e.g "vvm" matches "vvm.assembly"
 		if (artifact == "*" || artifact == _artifact)
 			return true;
 	return false;
@@ -213,7 +213,7 @@ Json::Value formatLinkReferences(std::map<size_t, std::string> const& linkRefere
 	return ret;
 }
 
-Json::Value collectEVMObject(eth::LinkerObject const& _object, string const* _sourceMap)
+Json::Value collectVVMObject(vap::LinkerObject const& _object, string const* _sourceMap)
 {
 	Json::Value output = Json::objectValue;
 	output["object"] = _object.toHex();
@@ -477,25 +477,25 @@ Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
 		if (isArtifactRequested(outputSelection, file, name, "devdoc"))
 			contractData["devdoc"] = m_compilerStack.natspecDev(contractName);
 
-		// EVM
-		Json::Value evmData(Json::objectValue);
+		// VVM
+		Json::Value vvmData(Json::objectValue);
 		// @TODO: add ir
-		if (isArtifactRequested(outputSelection, file, name, "evm.assembly"))
-			evmData["assembly"] = m_compilerStack.assemblyString(contractName, createSourceList(_input));
-		if (isArtifactRequested(outputSelection, file, name, "evm.legacyAssembly"))
-			evmData["legacyAssembly"] = m_compilerStack.assemblyJSON(contractName, createSourceList(_input));
-		if (isArtifactRequested(outputSelection, file, name, "evm.methodIdentifiers"))
-			evmData["methodIdentifiers"] = m_compilerStack.methodIdentifiers(contractName);
-		if (isArtifactRequested(outputSelection, file, name, "evm.gasEstimates"))
-			evmData["gasEstimates"] = m_compilerStack.gasEstimates(contractName);
+		if (isArtifactRequested(outputSelection, file, name, "vvm.assembly"))
+			vvmData["assembly"] = m_compilerStack.assemblyString(contractName, createSourceList(_input));
+		if (isArtifactRequested(outputSelection, file, name, "vvm.legacyAssembly"))
+			vvmData["legacyAssembly"] = m_compilerStack.assemblyJSON(contractName, createSourceList(_input));
+		if (isArtifactRequested(outputSelection, file, name, "vvm.methodIdentifiers"))
+			vvmData["methodIdentifiers"] = m_compilerStack.methodIdentifiers(contractName);
+		if (isArtifactRequested(outputSelection, file, name, "vvm.gasEstimates"))
+			vvmData["gasEstimates"] = m_compilerStack.gasEstimates(contractName);
 
 		if (isArtifactRequested(
 			outputSelection,
 			file,
 			name,
-			{ "evm.bytecode", "evm.bytecode.object", "evm.bytecode.opcodes", "evm.bytecode.sourceMap", "evm.bytecode.linkReferences" }
+			{ "vvm.bytecode", "vvm.bytecode.object", "vvm.bytecode.opcodes", "vvm.bytecode.sourceMap", "vvm.bytecode.linkReferences" }
 		))
-			evmData["bytecode"] = collectEVMObject(
+			vvmData["bytecode"] = collectVVMObject(
 				m_compilerStack.object(contractName),
 				m_compilerStack.sourceMapping(contractName)
 			);
@@ -504,14 +504,14 @@ Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
 			outputSelection,
 			file,
 			name,
-			{ "evm.deployedBytecode", "evm.deployedBytecode.object", "evm.deployedBytecode.opcodes", "evm.deployedBytecode.sourceMap", "evm.deployedBytecode.linkReferences" }
+			{ "vvm.deployedBytecode", "vvm.deployedBytecode.object", "vvm.deployedBytecode.opcodes", "vvm.deployedBytecode.sourceMap", "vvm.deployedBytecode.linkReferences" }
 		))
-			evmData["deployedBytecode"] = collectEVMObject(
+			vvmData["deployedBytecode"] = collectVVMObject(
 				m_compilerStack.runtimeObject(contractName),
 				m_compilerStack.runtimeSourceMapping(contractName)
 			);
 
-		contractData["evm"] = evmData;
+		contractData["vvm"] = vvmData;
 
 		if (!contractsOutput.isMember(file))
 			contractsOutput[file] = Json::objectValue;

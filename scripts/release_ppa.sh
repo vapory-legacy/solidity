@@ -4,12 +4,12 @@
 ## ppa servers for building.
 ##
 ## If no argument is given, creates a package for the develop branch
-## and uploads it to the ethereum/ethereum-dev ppa.
+## and uploads it to the vapory/vapory-dev ppa.
 ##
 ## If an argument is given, it is used as a tag and the resulting package
-## is uploaded to the ethereum/ethereum ppa.
+## is uploaded to the vapory/vapory ppa.
 ##
-## The gnupg key for "builds@ethereum.org" has to be present in order to sign
+## The gnupg key for "builds@vapory.org" has to be present in order to sign
 ## the package.
 ##
 ## It will clone the Solidity git from github, determine the version,
@@ -17,16 +17,16 @@
 ##
 ## This requires the following entries in /etc/dput.cf:
 ##
-##  [ethereum-dev]
+##  [vapory-dev]
 ##  fqdn			= ppa.launchpad.net
 ##  method			= ftp
-##  incoming		= ~ethereum/ethereum-dev
+##  incoming		= ~vapory/vapory-dev
 ##  login			= anonymous
 ## 
-##  [ethereum]
+##  [vapory]
 ##  fqdn			= ppa.launchpad.net
 ##  method			= ftp
-##  incoming		= ~ethereum/ethereum
+##  incoming		= ~vapory/vapory
 ##  login			= anonymous
 
 ##
@@ -43,15 +43,15 @@ fi
 
 if [ "$branch" = develop ]
 then
-    pparepo=ethereum-dev
-    ppafilesurl=https://launchpad.net/~ethereum/+archive/ubuntu/ethereum-dev/+files
+    pparepo=vapory-dev
+    ppafilesurl=https://launchpad.net/~vapory/+archive/ubuntu/vapory-dev/+files
 else
-    pparepo=ethereum
-    ppafilesurl=https://launchpad.net/~ethereum/+archive/ubuntu/ethereum/+files
+    pparepo=vapory
+    ppafilesurl=https://launchpad.net/~vapory/+archive/ubuntu/vapory/+files
 fi
 
 keyid=703F83D0
-email=builds@ethereum.org
+email=builds@vapory.org
 packagename=solc
 
 for distribution in trusty vivid xenial zesty
@@ -71,7 +71,7 @@ else
 fi
 
 # Fetch source
-git clone --depth 2 --recursive https://github.com/ethereum/solidity.git -b "$branch"
+git clone --depth 2 --recursive https://github.com/vaporyco/solidity.git -b "$branch"
 mv solidity solc
 
 # Fetch jsoncpp dependency
@@ -111,7 +111,7 @@ cat <<EOF > debian/control
 Source: solc
 Section: science
 Priority: extra
-Maintainer: Christian (Buildserver key) <builds@ethereum.org>
+Maintainer: Christian (Buildserver key) <builds@vapory.org>
 Build-Depends: ${Z3DEPENDENCY}debhelper (>= 9.0.0),
                cmake,
                g++-4.8,
@@ -122,16 +122,16 @@ Build-Depends: ${Z3DEPENDENCY}debhelper (>= 9.0.0),
                libtool,
                scons
 Standards-Version: 3.9.5
-Homepage: https://ethereum.org
-Vcs-Git: git://github.com/ethereum/solidity.git
-Vcs-Browser: https://github.com/ethereum/solidity
+Homepage: https://vapory.org
+Vcs-Git: git://github.com/vaporyco/solidity.git
+Vcs-Browser: https://github.com/vaporyco/solidity
 
 Package: solc
 Architecture: any-i386 any-amd64
 Multi-Arch: same
 Depends: \${shlibs:Depends}, \${misc:Depends}
 Replaces: lllc (<< 1:0.3.6)
-Conflicts: libethereum (<= 1.2.9)
+Conflicts: libvapory (<= 1.2.9)
 Description: Solidity compiler.
  The commandline interface to the Solidity smart contract compiler.
 EOF
@@ -170,14 +170,14 @@ EOF
 cat <<EOF > debian/copyright
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: solc
-Source: https://github.com/ethereum/solidity
+Source: https://github.com/vaporyco/solidity
 
 Files: *
-Copyright: 2014-2016 Ethereum
+Copyright: 2014-2016 Ethereum 2019 Vapory
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2016 Ethereum
+Copyright: 2016 Ethereum 2019 Vapory
 License: GPL-3.0+
 
 License: GPL-3.0+
@@ -202,7 +202,7 @@ solc (0.0.1-0ubuntu1) saucy; urgency=low
 
   * Initial release.
 
- -- Christian <build@ethereum.org>  Mon, 03 Feb 2016 14:50:20 +0000
+ -- Christian <build@vapory.org>  Mon, 03 Feb 2016 14:50:20 +0000
 EOF
 echo docs > debian/docs
 mkdir debian/source

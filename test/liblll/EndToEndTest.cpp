@@ -895,11 +895,11 @@ BOOST_AUTO_TEST_CASE(ripemd160_one_arg)
 		fromHex("0xac5ab22e07b0fb80c69b6207902f725e2507e546")));
 }
 
-BOOST_AUTO_TEST_CASE(wei_szabo_finney_ether)
+BOOST_AUTO_TEST_CASE(wei_szabo_finney_vapor)
 {
 	char const* sourceCode = R"(
 		(returnlll
-			(return (+ wei (+ szabo (+ finney ether)))))
+			(return (+ wei (+ szabo (+ finney vapor)))))
 	)";
 	compileAndRun(sourceCode);
 	BOOST_CHECK(callFallback() == encodeArgs(u256(1001001000000000001)));

@@ -18,20 +18,20 @@
  * @author Christian <c@ethdev.com>
  * @author Gav Wood <g@ethdev.com>
  * @date 2014
- * Solidity AST to EVM bytecode compiler for expressions.
+ * Solidity AST to VVM bytecode compiler for expressions.
  */
 
 #include <functional>
 #include <memory>
 #include <boost/noncopyable.hpp>
 #include <libdevcore/Common.h>
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/SourceLocation.h>
 #include <libsolidity/ast/ASTVisitor.h>
 #include <libsolidity/codegen/LValue.h>
 #include <libsolidity/interface/Exceptions.h>
 
 namespace dev {
-namespace eth
+namespace vap
 {
 class AssemblyItem; // forward
 }
@@ -46,7 +46,7 @@ class ArrayType;
 
 /**
  * Compiler for expressions, i.e. converts an AST tree whose root is an Expression into a stream
- * of EVM instructions. It needs a compiler context that is the same for the whole compilation
+ * of VVM instructions. It needs a compiler context that is the same for the whole compilation
  * unit.
  */
 class ExpressionCompiler: private ASTConstVisitor

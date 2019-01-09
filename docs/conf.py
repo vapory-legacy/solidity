@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Solidity'
-copyright = '2016-2017, Ethereum'
+copyright = '2016-2017, Ethereum 2019 Vapory'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -209,7 +209,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-        ('index', 'solidity.tex', 'Solidity Documentation', 'Ethereum', 'manual'),
+        ('index', 'solidity.tex', 'Solidity Documentation', 'Vapory', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

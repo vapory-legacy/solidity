@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <libevmasm/SourceLocation.h>
+#include <libvvmasm/SourceLocation.h>
 #include <libsolidity/ast/ASTVisitor.h>
 
 namespace dev

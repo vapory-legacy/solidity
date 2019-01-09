@@ -1,3 +1,3 @@
-Giveth milestone tracker, originally from
+Givvap milestone tracker, originally from
 
-https://github.com/Giveth/milestonetracker/
+https://github.com/Givvap/milestonetracker/

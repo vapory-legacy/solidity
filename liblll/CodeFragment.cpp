@@ -29,12 +29,12 @@
 #pragma warning(pop)
 #pragma GCC diagnostic pop
 #include <libdevcore/CommonIO.h>
-#include <libevmasm/Instruction.h>
+#include <libvvmasm/Instruction.h>
 #include "CompilerState.h"
 #include "Parser.h"
 using namespace std;
 using namespace dev;
-using namespace dev::eth;
+using namespace dev::vap;
 
 void CodeFragment::finalise(CompilerState const& _cs)
 {

@@ -2,12 +2,12 @@
 Units and Globally Available Variables
 **************************************
 
-.. index:: wei, finney, szabo, ether
+.. index:: wei, finney, szabo, vapor
 
-Ether Units
+Vapor Units
 ===========
 
-A literal number can take a suffix of ``wei``, ``finney``, ``szabo`` or ``ether`` to convert between the subdenominations of Ether, where Ether currency numbers without a postfix are assumed to be Wei, e.g. ``2 ether == 2000 finney`` evaluates to ``true``.
+A literal number can take a suffix of ``wei``, ``finney``, ``szabo`` or ``vapor`` to convert between the subdenominations of Vapor, where Vapor currency numbers without a postfix are assumed to be Wei, e.g. ``2 vapor == 2000 finney`` evaluates to ``true``.
 
 .. index:: time, seconds, minutes, hours, days, weeks, years
 
@@ -111,7 +111,7 @@ Mathematical and Cryptographic Functions
 ``mulmod(uint x, uint y, uint k) returns (uint)``:
     compute ``(x * y) % k`` where the multiplication is performed with arbitrary precision and does not wrap around at ``2**256``.
 ``keccak256(...) returns (bytes32)``:
-    compute the Ethereum-SHA-3 (Keccak-256) hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
+    compute the Vapory-SHA-3 (Keccak-256) hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 ``sha256(...) returns (bytes32)``:
     compute the SHA-256 hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 ``sha3(...) returns (bytes32)``:
@@ -120,7 +120,7 @@ Mathematical and Cryptographic Functions
     compute RIPEMD-160 hash of the :ref:`(tightly packed) arguments <abi_packed_mode>`
 ``ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address)``:
     recover the address associated with the public key from elliptic curve signature or return zero on error
-    (`example usage <https://ethereum.stackexchange.com/q/1777/222>`_)
+    (`example usage <https://vapory.stackexchange.com/q/1777/222>`_)
 
 In the above, "tightly packed" means that the arguments are concatenated without padding.
 This means that the following are all identical::
@@ -164,7 +164,7 @@ For more information, see the section on :ref:`address`.
 .. warning::
     There are some dangers in using ``send``: The transfer fails if the call stack depth is at 1024
     (this can always be forced by the caller) and it also fails if the recipient runs out of gas. So in order
-    to make safe Ether transfers, always check the return value of ``send``, use ``transfer`` or even better:
+    to make safe Vapor transfers, always check the return value of ``send``, use ``transfer`` or even better:
     Use a pattern where the recipient withdraws the money.
 
 .. note::

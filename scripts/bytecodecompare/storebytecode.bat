@@ -28,10 +28,10 @@ cd bytecode
 ..\scripts\bytecodecompare\prepare_report.py ..\build\solc\%CONFIGURATION%\solc.exe
 
 REM Send to stdout instead of stderr to not confuse powershell
-git clone --depth 2 git@github.com:ethereum/solidity-test-bytecode.git 2>&1
+git clone --depth 2 git@github.com:vapory/solidity-test-bytecode.git 2>&1
 cd solidity-test-bytecode
 git config user.name "travis"
-git config user.email "chris@ethereum.org"
+git config user.email "chris@vapory.org"
 git clean -f -d -x 2>&1
 
 if not exist %DIRECTORY% mkdir %DIRECTORY%

@@ -49,6 +49,6 @@ Options::Options()
 			disableSMT = true;
 
 	if (!disableIPC && ipcPath.empty())
-		if (auto path = getenv("ETH_TEST_IPC"))
+		if (auto path = getenv("VAP_TEST_IPC"))
 			ipcPath = path;
 }
